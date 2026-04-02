@@ -37,43 +37,6 @@ function industrial_welding_scripts() {
 add_action( 'wp_enqueue_scripts', 'industrial_welding_scripts' );
 
 /**
- * Add Tailwind CSS CDN script to head (must be script, not stylesheet).
- */
-function industrial_welding_tailwind_cdn() {
-    ?>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                fontFamily: {
-                    rajdhani: ['Rajdhani', 'sans-serif'],
-                    roboto: ['Roboto', 'sans-serif'],
-                },
-                colors: {
-                    gray: {
-                        50:  '#f9fafb',
-                        100: '#f3f4f6',
-                        200: '#e5e7eb',
-                        300: '#d1d5db',
-                        400: '#9ca3af',
-                        500: '#6b7280',
-                        600: '#4b5563',
-                        700: '#374151',
-                        800: '#1f2937',
-                        900: '#111827',
-                        950: '#030712',
-                    },
-                },
-            },
-        },
-    }
-    </script>
-    <?php
-}
-add_action( 'wp_head', 'industrial_welding_tailwind_cdn', 1 );
-
-/**
  * Theme setup.
  */
 function industrial_welding_setup() {
