@@ -145,6 +145,7 @@ function industrial_welding_register_machines_cpt() {
         'publicly_queryable'  => true,
         'capability_type'     => 'post',
         'show_in_rest'        => true,
+        'has_archive'         => true,
         'rewrite'             => array( 'slug' => 'machines' ),
     );
     register_post_type( 'machines', $args );
