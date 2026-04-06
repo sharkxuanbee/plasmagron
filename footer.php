@@ -8,6 +8,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+$footer_navigation_items = industrial_welding_get_navigation_items();
+$contact_url             = industrial_welding_get_contact_page_url();
 ?>
 
     </main>
@@ -50,16 +53,26 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <div>
                         <h3 class="text-lg font-semibold text-yellow-500 mb-4 font-rajdhani"><?php esc_html_e( 'Products', 'industrial-welding' ); ?></h3>
                         <ul class="space-y-3">
-                            <?php
-                            wp_nav_menu( array(
-                                'theme_location' => 'footer',
-                                'container'      => false,
-                                'fallback_cb'    => false,
-                                'items_wrap'     => '%3$s',
-                                'link_before'    => '<li class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><span class="inline-flex items-center">',
-                                'link_after'     => '</span></li>',
-                            ) );
-                            ?>
+                            <?php if ( has_nav_menu( 'footer' ) ) : ?>
+                                <?php
+                                wp_nav_menu( array(
+                                    'theme_location' => 'footer',
+                                    'container'      => false,
+                                    'fallback_cb'    => false,
+                                    'items_wrap'     => '%3$s',
+                                    'link_before'    => '<span class="inline-flex items-center text-gray-400 hover:text-yellow-500 transition-colors text-sm">',
+                                    'link_after'     => '</span>',
+                                ) );
+                                ?>
+                            <?php else : ?>
+                                <?php foreach ( $footer_navigation_items as $item ) : ?>
+                                    <li>
+                                        <a href="<?php echo esc_url( $item['url'] ); ?>" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm">
+                                            <?php echo esc_html( $item['label'] ); ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 <?php endif; ?>
@@ -72,10 +85,10 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <div>
                         <h3 class="text-lg font-semibold text-yellow-500 mb-4 font-rajdhani"><?php esc_html_e( 'Support', 'industrial-welding' ); ?></h3>
                         <ul class="space-y-3">
-                            <li><a href="#" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><?php esc_html_e( 'Warranty Info', 'industrial-welding' ); ?></a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><?php esc_html_e( 'Shipping & Delivery', 'industrial-welding' ); ?></a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><?php esc_html_e( 'Technical Support', 'industrial-welding' ); ?></a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><?php esc_html_e( 'Contact Us', 'industrial-welding' ); ?></a></li>
+                            <li><a href="<?php echo esc_url( $contact_url ); ?>" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><?php esc_html_e( 'Warranty Info', 'industrial-welding' ); ?></a></li>
+                            <li><a href="<?php echo esc_url( $contact_url ); ?>" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><?php esc_html_e( 'Shipping & Delivery', 'industrial-welding' ); ?></a></li>
+                            <li><a href="<?php echo esc_url( $contact_url ); ?>" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><?php esc_html_e( 'Technical Support', 'industrial-welding' ); ?></a></li>
+                            <li><a href="<?php echo esc_url( $contact_url ); ?>" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm"><?php esc_html_e( 'Contact Us', 'industrial-welding' ); ?></a></li>
                         </ul>
                     </div>
                 <?php endif; ?>
