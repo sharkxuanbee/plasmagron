@@ -11,18 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
-$featured_args = array(
-    'post_type'      => 'machines',
-    'posts_per_page' => 3,
-    'meta_query'     => array(
-        array(
-            'key'   => 'featured_machine',
-            'value' => '1',
-        ),
-    ),
-);
-
-$featured_query = new WP_Query( $featured_args );
+$featured_query = new WP_Query( industrial_welding_get_featured_products_query_args( 3 ) );
+$catalog_url    = industrial_welding_get_catalog_url();
+$compare_url    = industrial_welding_get_compare_page_url();
 ?>
 
 <section class="relative bg-gray-900 overflow-hidden">
@@ -47,13 +38,13 @@ $featured_query = new WP_Query( $featured_args );
                 <?php esc_html_e( 'Professional plasma cutters, MIG, and TIG welders engineered for maximum performance, durability, and efficiency in the most demanding B2B environments.', 'industrial-welding' ); ?>
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
-                <a href="<?php echo esc_url( get_post_type_archive_link( 'machines' ) ); ?>" class="inline-flex items-center justify-center px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold text-lg rounded transition-colors font-rajdhani tracking-wide">
+                <a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold text-lg rounded transition-colors font-rajdhani tracking-wide">
                     <?php esc_html_e( 'View All Machines', 'industrial-welding' ); ?>
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                     </svg>
                 </a>
-                <a href="/compare" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-600 hover:border-yellow-500 text-white font-bold text-lg rounded transition-colors font-rajdhani tracking-wide">
+                <a href="<?php echo esc_url( $compare_url ); ?>" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-600 hover:border-yellow-500 text-white font-bold text-lg rounded transition-colors font-rajdhani tracking-wide">
                     <?php esc_html_e( 'Compare Machines', 'industrial-welding' ); ?>
                 </a>
             </div>
@@ -103,13 +94,15 @@ $featured_query = new WP_Query( $featured_args );
                 <?php
                 while ( $featured_query->have_posts() ) :
                     $featured_query->the_post();
+                    $product = industrial_welding_is_woocommerce_active() ? wc_get_product( get_the_ID() ) : null;
                     $machine_meta = array(
-                        'amperage'     => get_machine_meta( get_the_ID(), 'amperage' ),
-                        'input_voltage' => get_machine_meta( get_the_ID(), 'input_voltage' ),
-                        'duty_cycle'  => get_machine_meta( get_the_ID(), 'duty_cycle' ),
+                        'amperage'      => industrial_welding_get_product_meta( get_the_ID(), 'amperage' ),
+                        'input_voltage' => industrial_welding_get_product_meta( get_the_ID(), 'input_voltage' ),
+                        'duty_cycle'    => industrial_welding_get_product_meta( get_the_ID(), 'duty_cycle' ),
                     );
+                    $primary_term = industrial_welding_get_primary_product_term( get_the_ID() );
                     ?>
-                    <article id="machine-<?php the_ID(); ?>" <?php post_class( 'bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-yellow-500/50 transition-all duration-300 group' ); ?>>
+                    <article id="product-<?php the_ID(); ?>" <?php post_class( 'bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-yellow-500/50 transition-all duration-300 group' ); ?>>
                         <?php if ( has_post_thumbnail() ) : ?>
                             <div class="relative overflow-hidden">
                                 <div class="aspect-w-16 aspect-h-9">
@@ -124,20 +117,11 @@ $featured_query = new WP_Query( $featured_args );
                         <?php endif; ?>
                         
                         <div class="p-6">
-                            <?php
-                            $terms = get_the_terms( get_the_ID(), 'machine_type' );
-                            if ( $terms && ! is_wp_error( $terms ) ) :
-                                ?>
+                            <?php if ( $primary_term ) : ?>
                                 <div class="mb-3">
-                                    <?php
-                                    foreach ( array_slice( $terms, 0, 1 ) as $term ) :
-                                        ?>
-                                        <span class="text-xs text-yellow-500 font-medium uppercase tracking-wider">
-                                            <?php echo esc_html( $term->name ); ?>
-                                        </span>
-                                        <?php
-                                    endforeach;
-                                    ?>
+                                    <span class="text-xs text-yellow-500 font-medium uppercase tracking-wider">
+                                        <?php echo esc_html( $primary_term->name ); ?>
+                                    </span>
                                 </div>
                             <?php endif; ?>
 
@@ -150,6 +134,12 @@ $featured_query = new WP_Query( $featured_args );
                             <?php if ( has_excerpt() ) : ?>
                                 <p class="text-gray-400 text-sm mb-4 line-clamp-2">
                                     <?php the_excerpt(); ?>
+                                </p>
+                            <?php endif; ?>
+
+                            <?php if ( $product && $product->get_price_html() ) : ?>
+                                <p class="text-lg font-bold text-yellow-500 font-rajdhani mb-4">
+                                    <?php echo wp_kses_post( $product->get_price_html() ); ?>
                                 </p>
                             <?php endif; ?>
 
@@ -272,7 +262,7 @@ $featured_query = new WP_Query( $featured_args );
         <?php wp_reset_postdata(); ?>
 
         <div class="text-center mt-12">
-            <a href="<?php echo esc_url( get_post_type_archive_link( 'machines' ) ); ?>" class="inline-flex items-center text-yellow-500 hover:text-yellow-400 font-semibold transition-colors">
+            <a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center text-yellow-500 hover:text-yellow-400 font-semibold transition-colors">
                 <?php esc_html_e( 'View All Machines', 'industrial-welding' ); ?>
                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -347,7 +337,7 @@ $featured_query = new WP_Query( $featured_args );
                             <?php esc_html_e( 'Get a custom quote for your facility. Our team will work with you to find the perfect equipment configuration for your specific applications.', 'industrial-welding' ); ?>
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="/contact" class="inline-flex items-center justify-center px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded transition-colors font-rajdhani tracking-wide">
+                            <a href="<?php echo esc_url( industrial_welding_get_contact_page_url() ); ?>" class="inline-flex items-center justify-center px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded transition-colors font-rajdhani tracking-wide">
                                 <?php esc_html_e( 'Request a Quote', 'industrial-welding' ); ?>
                             </a>
                             <a href="tel:+18005551234" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-600 hover:border-white text-white font-bold rounded transition-colors font-rajdhani tracking-wide">

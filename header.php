@@ -59,15 +59,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                     ?>
                         <ul class="flex space-x-8">
                             <li><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Home', 'industrial-welding' ); ?></a></li>
-                            <li><a href="<?php echo esc_url( get_post_type_archive_link( 'machines' ) ? get_post_type_archive_link( 'machines' ) : home_url( '/machines/' ) ); ?>" class="text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Machines', 'industrial-welding' ); ?></a></li>
+                            <li><a href="<?php echo esc_url( industrial_welding_get_catalog_url() ); ?>" class="text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Machines', 'industrial-welding' ); ?></a></li>
                             <?php if ( get_page_by_path( 'compare' ) ) : ?>
-                                <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'compare' ) ) ); ?>" class="text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Compare', 'industrial-welding' ); ?></a></li>
+                                <li><a href="<?php echo esc_url( industrial_welding_get_compare_page_url() ); ?>" class="text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Compare', 'industrial-welding' ); ?></a></li>
                             <?php endif; ?>
                             <?php if ( get_page_by_path( 'blog' ) ) : ?>
                                 <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'blog' ) ) ); ?>" class="text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Blog', 'industrial-welding' ); ?></a></li>
                             <?php endif; ?>
                             <?php if ( get_page_by_path( 'contact' ) ) : ?>
-                                <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact' ) ) ); ?>" class="text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Contact', 'industrial-welding' ); ?></a></li>
+                                <li><a href="<?php echo esc_url( industrial_welding_get_contact_page_url() ); ?>" class="text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Contact', 'industrial-welding' ); ?></a></li>
                             <?php endif; ?>
                         </ul>
                     <?php endif; ?>
@@ -96,17 +96,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <div id="mobile-menu" class="hidden md:hidden bg-gray-800 border-t border-gray-700">
             <div class="px-4 py-4 space-y-3">
-                <?php
-                wp_nav_menu( array(
-                    'theme_location' => 'primary',
-                    'menu_id'        => 'mobile-menu',
-                    'container'      => false,
-                    'fallback_cb'    => false,
-                    'items_wrap'     => '<ul class="space-y-3">%3$s</ul>',
-                    'link_before'    => '<span class="block text-gray-300 hover:text-yellow-500 transition-colors font-medium">',
-                    'link_after'     => '</span>',
-                ) );
-                ?>
+                <?php if ( has_nav_menu( 'primary' ) ) : ?>
+                    <?php
+                    wp_nav_menu( array(
+                        'theme_location' => 'primary',
+                        'menu_id'        => 'mobile-menu',
+                        'container'      => false,
+                        'fallback_cb'    => false,
+                        'items_wrap'     => '<ul class="space-y-3">%3$s</ul>',
+                        'link_before'    => '<span class="block text-gray-300 hover:text-yellow-500 transition-colors font-medium">',
+                        'link_after'     => '</span>',
+                    ) );
+                    ?>
+                <?php else : ?>
+                    <ul class="space-y-3">
+                        <li><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="block text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Home', 'industrial-welding' ); ?></a></li>
+                        <li><a href="<?php echo esc_url( industrial_welding_get_catalog_url() ); ?>" class="block text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Machines', 'industrial-welding' ); ?></a></li>
+                        <?php if ( get_page_by_path( 'compare' ) ) : ?>
+                            <li><a href="<?php echo esc_url( industrial_welding_get_compare_page_url() ); ?>" class="block text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Compare', 'industrial-welding' ); ?></a></li>
+                        <?php endif; ?>
+                        <?php if ( get_page_by_path( 'blog' ) ) : ?>
+                            <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'blog' ) ) ); ?>" class="block text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Blog', 'industrial-welding' ); ?></a></li>
+                        <?php endif; ?>
+                        <?php if ( get_page_by_path( 'contact' ) ) : ?>
+                            <li><a href="<?php echo esc_url( industrial_welding_get_contact_page_url() ); ?>" class="block text-gray-300 hover:text-yellow-500 transition-colors font-medium"><?php esc_html_e( 'Contact', 'industrial-welding' ); ?></a></li>
+                        <?php endif; ?>
+                    </ul>
+                <?php endif; ?>
                 <div class="pt-4 border-t border-gray-700">
                     <?php get_search_form( true ); ?>
                 </div>
