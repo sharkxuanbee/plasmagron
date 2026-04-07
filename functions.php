@@ -3,7 +3,7 @@
  * Industrial Welding Theme Functions
  *
  * @package Industrial_Welding
- * @version 2.1.0
+ * @version 2.2.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -79,6 +79,21 @@ function industrial_welding_get_contact_page_url() {
 	}
 
 	return home_url( '/contact/' );
+}
+
+/**
+ * Get the Finder page URL.
+ *
+ * @return string
+ */
+function industrial_welding_get_finder_page_url() {
+	$page = get_page_by_path( 'finder' );
+
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+
+	return home_url( '/finder/' );
 }
 
 /**
@@ -163,6 +178,7 @@ function industrial_welding_get_navigation_items() {
 	);
 
 	$optional_pages = array(
+		'finder'  => __( 'Finder', 'industrial-welding' ),
 		'compare' => __( 'Compare', 'industrial-welding' ),
 		'blog'    => __( 'Blog', 'industrial-welding' ),
 		'contact' => __( 'Contact', 'industrial-welding' ),
@@ -409,6 +425,637 @@ function industrial_welding_get_requested_compare_ids() {
 }
 
 /**
+ * Get the taxonomies used by the catalog filters and Finder.
+ *
+ * @return array<string, array<string, string>>
+ */
+function industrial_welding_get_filterable_catalog_taxonomies() {
+	return array(
+		'usage_scene'  => array(
+			'label'          => __( 'Usage Scene', 'industrial-welding' ),
+			'short_label'    => __( 'Usage', 'industrial-welding' ),
+			'question'       => __( 'What will you weld?', 'industrial-welding' ),
+			'question_hint'  => __( 'Choose the application or shop context closest to your work.', 'industrial-welding' ),
+			'empty_message'  => __( 'Usage scene terms have not been added yet.', 'industrial-welding' ),
+			'archive_intro'  => __( 'Use this view to narrow the catalog by application before comparing models.', 'industrial-welding' ),
+		),
+		'skill_level' => array(
+			'label'          => __( 'Skill Level', 'industrial-welding' ),
+			'short_label'    => __( 'Skill', 'industrial-welding' ),
+			'question'       => __( 'Experience level?', 'industrial-welding' ),
+			'question_hint'  => __( 'Select the operator experience level the machine should suit.', 'industrial-welding' ),
+			'empty_message'  => __( 'Skill level terms have not been added yet.', 'industrial-welding' ),
+			'archive_intro'  => __( 'Use this view when the operator skill level matters as much as the raw specifications.', 'industrial-welding' ),
+		),
+		'budget_range' => array(
+			'label'          => __( 'Budget Range', 'industrial-welding' ),
+			'short_label'    => __( 'Budget', 'industrial-welding' ),
+			'question'       => __( 'Budget?', 'industrial-welding' ),
+			'question_hint'  => __( 'Keep the shortlist grounded in a realistic spending range.', 'industrial-welding' ),
+			'empty_message'  => __( 'Budget range terms have not been added yet.', 'industrial-welding' ),
+			'archive_intro'  => __( 'Use this view to keep the catalog aligned with the target spend before moving to detail or compare.', 'industrial-welding' ),
+		),
+	);
+}
+
+/**
+ * Get taxonomies supported by the catalog landing templates.
+ *
+ * @return string[]
+ */
+function industrial_welding_get_supported_catalog_taxonomies() {
+	return array_merge(
+		array( 'product_cat' ),
+		array_keys( industrial_welding_get_filterable_catalog_taxonomies() )
+	);
+}
+
+/**
+ * Get requested catalog filters from the URL.
+ *
+ * @return array<string, string>
+ */
+function industrial_welding_get_requested_catalog_filters() {
+	$filters = array();
+
+	foreach ( industrial_welding_get_filterable_catalog_taxonomies() as $taxonomy => $config ) {
+		if ( ! isset( $_GET[ $taxonomy ] ) ) {
+			continue;
+		}
+
+		$value = sanitize_title( wp_unslash( $_GET[ $taxonomy ] ) );
+
+		if ( '' === $value ) {
+			continue;
+		}
+
+		$filters[ $taxonomy ] = $value;
+	}
+
+	return $filters;
+}
+
+/**
+ * Get active catalog filters, including the current taxonomy archive when relevant.
+ *
+ * @param WP_Term|null $current_term Current queried term.
+ * @return array<string, string>
+ */
+function industrial_welding_get_active_catalog_filters( $current_term = null ) {
+	$filters = industrial_welding_get_requested_catalog_filters();
+
+	if ( $current_term instanceof WP_Term && isset( industrial_welding_get_filterable_catalog_taxonomies()[ $current_term->taxonomy ] ) ) {
+		$filters[ $current_term->taxonomy ] = $current_term->slug;
+	}
+
+	return $filters;
+}
+
+/**
+ * Get the current queried catalog term when the archive is a supported taxonomy.
+ *
+ * @return WP_Term|null
+ */
+function industrial_welding_get_catalog_current_term() {
+	$queried_object = get_queried_object();
+
+	if ( ! ( $queried_object instanceof WP_Term ) ) {
+		return null;
+	}
+
+	if ( ! in_array( $queried_object->taxonomy, industrial_welding_get_supported_catalog_taxonomies(), true ) ) {
+		return null;
+	}
+
+	return $queried_object;
+}
+
+/**
+ * Get a catalog URL with the requested filters preserved and optionally overridden.
+ *
+ * @param array<string, string|null> $overrides Filter overrides.
+ * @param string                     $base_url  Base URL to apply filters to.
+ * @return string
+ */
+function industrial_welding_get_catalog_url_with_filters( $overrides = array(), $base_url = '' ) {
+	$filters = industrial_welding_get_requested_catalog_filters();
+
+	foreach ( $overrides as $taxonomy => $value ) {
+		if ( null === $value || '' === $value ) {
+			unset( $filters[ $taxonomy ] );
+			continue;
+		}
+
+		$filters[ $taxonomy ] = sanitize_title( $value );
+	}
+
+	$target_url = $base_url ? $base_url : industrial_welding_get_catalog_url();
+	$target_url = remove_query_arg( 'paged', $target_url );
+
+	if ( empty( $filters ) ) {
+		return $target_url;
+	}
+
+	return add_query_arg( $filters, $target_url );
+}
+
+/**
+ * Get a catalog term from the current query.
+ *
+ * @param WP_Query $query Query object.
+ * @return array<string, string>|null
+ */
+function industrial_welding_get_catalog_term_from_query( $query ) {
+	foreach ( industrial_welding_get_supported_catalog_taxonomies() as $taxonomy ) {
+		if ( ! $query->is_tax( $taxonomy ) ) {
+			continue;
+		}
+
+		$term_slug = $query->get( $taxonomy );
+
+		if ( is_array( $term_slug ) ) {
+			$term_slug = reset( $term_slug );
+		}
+
+		if ( ! $term_slug ) {
+			continue;
+		}
+
+		return array(
+			'taxonomy' => $taxonomy,
+			'slug'     => sanitize_title( (string) $term_slug ),
+		);
+	}
+
+	return null;
+}
+
+/**
+ * Build the catalog tax query using the current archive plus active filters.
+ *
+ * @param WP_Query $query Query object.
+ * @return array<int|string, mixed>
+ */
+function industrial_welding_get_catalog_tax_query_for_query( $query ) {
+	$tax_query    = array( 'relation' => 'AND' );
+	$current_term = industrial_welding_get_catalog_term_from_query( $query );
+
+	if ( $current_term ) {
+		$tax_query[] = array(
+			'taxonomy' => $current_term['taxonomy'],
+			'field'    => 'slug',
+			'terms'    => $current_term['slug'],
+		);
+	}
+
+	foreach ( industrial_welding_get_requested_catalog_filters() as $taxonomy => $slug ) {
+		if ( $current_term && $current_term['taxonomy'] === $taxonomy ) {
+			continue;
+		}
+
+		$tax_query[] = array(
+			'taxonomy' => $taxonomy,
+			'field'    => 'slug',
+			'terms'    => $slug,
+		);
+	}
+
+	return count( $tax_query ) > 1 ? $tax_query : array();
+}
+
+/**
+ * Apply the catalog filters to product archive queries.
+ *
+ * @param WP_Query $query Query object.
+ */
+function industrial_welding_apply_catalog_filters_to_query( $query ) {
+	if ( is_admin() || ! $query->is_main_query() ) {
+		return;
+	}
+
+	$is_catalog_query = $query->is_post_type_archive( 'product' ) || $query->is_tax( industrial_welding_get_supported_catalog_taxonomies() );
+
+	if ( ! $is_catalog_query ) {
+		return;
+	}
+
+	$tax_query = industrial_welding_get_catalog_tax_query_for_query( $query );
+
+	if ( ! empty( $tax_query ) ) {
+		$query->set( 'tax_query', $tax_query );
+	}
+
+	$query->set( 'post_type', 'product' );
+	$query->set( 'post_status', 'publish' );
+}
+add_action( 'pre_get_posts', 'industrial_welding_apply_catalog_filters_to_query' );
+
+/**
+ * Get filter terms for a catalog taxonomy.
+ *
+ * @param string $taxonomy Taxonomy name.
+ * @return WP_Term[]
+ */
+function industrial_welding_get_catalog_filter_terms( $taxonomy ) {
+	if ( ! taxonomy_exists( $taxonomy ) ) {
+		return array();
+	}
+
+	$terms = get_terms(
+		array(
+			'taxonomy'   => $taxonomy,
+			'hide_empty' => true,
+			'orderby'    => 'name',
+			'order'      => 'ASC',
+		)
+	);
+
+	if ( is_wp_error( $terms ) ) {
+		return array();
+	}
+
+	return $terms;
+}
+
+/**
+ * Get the data coverage counts used by the filter and Finder experience.
+ *
+ * @return array<string, mixed>
+ */
+function industrial_welding_get_catalog_data_coverage() {
+	$product_ids = get_posts(
+		array(
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		)
+	);
+
+	$total = count( $product_ids );
+	$stats = array(
+		'total'              => $total,
+		'usage_scene'        => 0,
+		'skill_level'        => 0,
+		'budget_range'       => 0,
+		'product_cat'        => 0,
+		'core_specs'         => 0,
+		'selection_complete' => 0,
+	);
+
+	foreach ( $product_ids as $product_id ) {
+		$has_usage_scene  = has_term( '', 'usage_scene', $product_id );
+		$has_skill_level  = has_term( '', 'skill_level', $product_id );
+		$has_budget_range = has_term( '', 'budget_range', $product_id );
+		$has_category     = has_term( '', 'product_cat', $product_id );
+		$spec_count       = count( industrial_welding_get_product_spec_entries( $product_id, array( 'amperage', 'input_voltage', 'duty_cycle' ) ) );
+
+		if ( $has_usage_scene ) {
+			++$stats['usage_scene'];
+		}
+
+		if ( $has_skill_level ) {
+			++$stats['skill_level'];
+		}
+
+		if ( $has_budget_range ) {
+			++$stats['budget_range'];
+		}
+
+		if ( $has_category ) {
+			++$stats['product_cat'];
+		}
+
+		if ( $spec_count >= 3 ) {
+			++$stats['core_specs'];
+		}
+
+		if ( $has_usage_scene && $has_skill_level && $has_budget_range && $has_category && $spec_count >= 3 ) {
+			++$stats['selection_complete'];
+		}
+	}
+
+	$rows = array(
+		'usage_scene'        => __( 'Usage scene coverage', 'industrial-welding' ),
+		'skill_level'        => __( 'Skill level coverage', 'industrial-welding' ),
+		'budget_range'       => __( 'Budget coverage', 'industrial-welding' ),
+		'product_cat'        => __( 'Category coverage', 'industrial-welding' ),
+		'core_specs'         => __( 'Core spec coverage', 'industrial-welding' ),
+		'selection_complete' => __( 'Complete selection profile', 'industrial-welding' ),
+	);
+
+	foreach ( $rows as $key => $label ) {
+		$stats['rows'][ $key ] = array(
+			'label'   => $label,
+			'count'   => isset( $stats[ $key ] ) ? (int) $stats[ $key ] : 0,
+			'percent' => $total > 0 && isset( $stats[ $key ] ) ? (int) round( ( $stats[ $key ] / $total ) * 100 ) : 0,
+		);
+	}
+
+	return $stats;
+}
+
+/**
+ * Get the Finder thickness options.
+ *
+ * @return array<string, array<string, mixed>>
+ */
+function industrial_welding_get_finder_thickness_options() {
+	return array(
+		'thin'   => array(
+			'label'       => __( 'Thin Material', 'industrial-welding' ),
+			'description' => __( 'Light-gauge work and lower amperage requirements.', 'industrial-welding' ),
+			'min'         => 0,
+			'max'         => 140,
+		),
+		'medium' => array(
+			'label'       => __( 'Medium Thickness', 'industrial-welding' ),
+			'description' => __( 'General fabrication jobs that need balanced output.', 'industrial-welding' ),
+			'min'         => 141,
+			'max'         => 220,
+		),
+		'heavy'  => array(
+			'label'       => __( 'Heavy Section', 'industrial-welding' ),
+			'description' => __( 'Higher-output work where sustained amperage matters.', 'industrial-welding' ),
+			'min'         => 221,
+			'max'         => PHP_INT_MAX,
+		),
+	);
+}
+
+/**
+ * Get the current Finder answers from the request.
+ *
+ * @return array<string, string>
+ */
+function industrial_welding_get_finder_answers() {
+	$answers = industrial_welding_get_requested_catalog_filters();
+
+	if ( isset( $_GET['thickness'] ) ) {
+		$thickness = sanitize_key( wp_unslash( $_GET['thickness'] ) );
+
+		if ( isset( industrial_welding_get_finder_thickness_options()[ $thickness ] ) ) {
+			$answers['thickness'] = $thickness;
+		}
+	}
+
+	return $answers;
+}
+
+/**
+ * Get the numeric amperage value from a product's amperage field.
+ *
+ * @param int $product_id Product ID.
+ * @return float
+ */
+function industrial_welding_get_product_amperage_value( $product_id ) {
+	$amperage = (string) industrial_welding_get_product_meta( $product_id, 'amperage' );
+
+	if ( ! $amperage ) {
+		return 0;
+	}
+
+	if ( preg_match( '/([\d.]+)/', $amperage, $matches ) ) {
+		return (float) $matches[1];
+	}
+
+	return 0;
+}
+
+/**
+ * Get the thickness band that best matches an amperage value.
+ *
+ * @param float $amperage Product amperage.
+ * @return string
+ */
+function industrial_welding_get_thickness_band_for_amperage( $amperage ) {
+	foreach ( industrial_welding_get_finder_thickness_options() as $slug => $option ) {
+		if ( $amperage >= $option['min'] && $amperage <= $option['max'] ) {
+			return $slug;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Get the primary term for a product under a specific taxonomy.
+ *
+ * @param int    $product_id Product ID.
+ * @param string $taxonomy   Taxonomy name.
+ * @return WP_Term|null
+ */
+function industrial_welding_get_primary_term_for_taxonomy( $product_id, $taxonomy ) {
+	$terms = get_the_terms( $product_id, $taxonomy );
+
+	if ( empty( $terms ) || is_wp_error( $terms ) ) {
+		return null;
+	}
+
+	return array_shift( $terms );
+}
+
+/**
+ * Get Finder recommendations from the current answers.
+ *
+ * @param array<string, string> $answers Finder answers.
+ * @param int                   $limit   Maximum number of products.
+ * @return array<string, mixed>
+ */
+function industrial_welding_get_finder_recommendations( $answers, $limit = 3 ) {
+	$result = array(
+		'items'            => array(),
+		'is_fallback'      => false,
+		'is_partial'       => false,
+		'matched_products' => 0,
+		'compare_url'      => '',
+		'catalog_url'      => industrial_welding_get_catalog_url_with_filters(
+			array(
+				'usage_scene'  => isset( $answers['usage_scene'] ) ? $answers['usage_scene'] : null,
+				'skill_level'  => isset( $answers['skill_level'] ) ? $answers['skill_level'] : null,
+				'budget_range' => isset( $answers['budget_range'] ) ? $answers['budget_range'] : null,
+			)
+		),
+	);
+
+	if ( empty( $answers ) ) {
+		return $result;
+	}
+
+	$product_ids = get_posts(
+		array(
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		)
+	);
+
+	$scored_products = array();
+
+	foreach ( $product_ids as $product_id ) {
+		$score          = 0;
+		$matched_rules  = 0;
+		$reason_details = array();
+
+		if ( ! empty( $answers['usage_scene'] ) && has_term( $answers['usage_scene'], 'usage_scene', $product_id ) ) {
+			$usage_term = industrial_welding_get_primary_term_for_taxonomy( $product_id, 'usage_scene' );
+			$score     += 45;
+			++$matched_rules;
+
+			if ( $usage_term ) {
+				$reason_details[] = sprintf(
+					/* translators: %s: usage scene name */
+					__( 'Matches the %s usage scene.', 'industrial-welding' ),
+					$usage_term->name
+				);
+			}
+		}
+
+		if ( ! empty( $answers['thickness'] ) ) {
+			$amperage       = industrial_welding_get_product_amperage_value( $product_id );
+			$thickness_band = $amperage > 0 ? industrial_welding_get_thickness_band_for_amperage( $amperage ) : '';
+
+			if ( $thickness_band && $answers['thickness'] === $thickness_band ) {
+				$thickness_label = industrial_welding_get_finder_thickness_options()[ $answers['thickness'] ]['label'];
+				$score          += 25;
+				++$matched_rules;
+				$reason_details[] = sprintf(
+					/* translators: 1: thickness label, 2: amperage text */
+					__( 'Amperage output fits the %1$s range (%2$s).', 'industrial-welding' ),
+					$thickness_label,
+					(string) industrial_welding_get_product_meta( $product_id, 'amperage' )
+				);
+			}
+		}
+
+		if ( ! empty( $answers['skill_level'] ) && has_term( $answers['skill_level'], 'skill_level', $product_id ) ) {
+			$skill_term = industrial_welding_get_primary_term_for_taxonomy( $product_id, 'skill_level' );
+			$score     += 18;
+			++$matched_rules;
+
+			if ( $skill_term ) {
+				$reason_details[] = sprintf(
+					/* translators: %s: skill level term name */
+					__( 'Aligned with the %s operator level.', 'industrial-welding' ),
+					$skill_term->name
+				);
+			}
+		}
+
+		if ( ! empty( $answers['budget_range'] ) && has_term( $answers['budget_range'], 'budget_range', $product_id ) ) {
+			$budget_term = industrial_welding_get_primary_term_for_taxonomy( $product_id, 'budget_range' );
+			$score      += 15;
+			++$matched_rules;
+
+			if ( $budget_term ) {
+				$reason_details[] = sprintf(
+					/* translators: %s: budget term name */
+					__( 'Sits in the %s budget band.', 'industrial-welding' ),
+					$budget_term->name
+				);
+			}
+		}
+
+		if ( count( industrial_welding_get_product_spec_entries( $product_id, array( 'amperage', 'input_voltage', 'duty_cycle' ) ) ) >= 3 ) {
+			$score += 5;
+		}
+
+		if ( $score <= 0 ) {
+			continue;
+		}
+
+		$scored_products[] = array(
+			'id'            => $product_id,
+			'score'         => $score,
+			'matched_rules' => $matched_rules,
+			'reasons'       => array_slice( array_values( array_unique( $reason_details ) ), 0, 3 ),
+		);
+	}
+
+	usort(
+		$scored_products,
+		static function( $left, $right ) {
+			if ( $left['score'] === $right['score'] ) {
+				if ( $left['matched_rules'] === $right['matched_rules'] ) {
+					return $left['id'] < $right['id'] ? -1 : 1;
+				}
+
+				return $right['matched_rules'] <=> $left['matched_rules'];
+			}
+
+			return $right['score'] <=> $left['score'];
+		}
+	);
+
+	if ( empty( $scored_products ) ) {
+		$fallback_query = new WP_Query( industrial_welding_get_featured_products_query_args( $limit ) );
+
+		if ( $fallback_query->have_posts() ) {
+			while ( $fallback_query->have_posts() ) {
+				$fallback_query->the_post();
+				$scored_products[] = array(
+					'id'            => get_the_ID(),
+					'score'         => 0,
+					'matched_rules' => 0,
+					'reasons'       => array(
+						__( 'No exact Finder match was available, so this featured machine is shown as a safe fallback.', 'industrial-welding' ),
+					),
+				);
+			}
+
+			wp_reset_postdata();
+		}
+
+		$result['is_fallback'] = true;
+	}
+
+	$scored_products             = array_slice( $scored_products, 0, $limit );
+	$result['matched_products']  = count( $scored_products );
+	$recommended_product_ids     = array();
+	$answered_rule_count         = count( $answers );
+
+	foreach ( $scored_products as $item ) {
+		$product = industrial_welding_is_woocommerce_active() ? wc_get_product( $item['id'] ) : null;
+
+		if ( ! $product ) {
+			continue;
+		}
+
+		$recommended_product_ids[] = $item['id'];
+		$primary_term              = industrial_welding_get_primary_product_term( $item['id'] );
+
+		$result['items'][] = array(
+			'id'         => $item['id'],
+			'title'      => get_the_title( $item['id'] ),
+			'permalink'  => get_permalink( $item['id'] ),
+			'thumbnail'  => get_the_post_thumbnail_url( $item['id'], 'medium_large' ),
+			'summary'    => industrial_welding_get_product_summary( $product, 22 ),
+			'price_html' => $product->get_price_html(),
+			'category'   => $primary_term ? $primary_term->name : industrial_welding_get_machine_label(),
+			'reasons'    => $item['reasons'],
+			'score'      => $item['score'],
+		);
+
+		if ( $answered_rule_count > 0 && $item['matched_rules'] < $answered_rule_count ) {
+			$result['is_partial'] = true;
+		}
+	}
+
+	if ( count( $recommended_product_ids ) >= 2 ) {
+		$result['compare_url'] = add_query_arg(
+			industrial_welding_get_compare_query_key(),
+			implode( ',', $recommended_product_ids ),
+			industrial_welding_get_compare_page_url()
+		);
+	}
+
+	return $result;
+}
+
+/**
  * Enqueue scripts and styles.
  */
 function industrial_welding_scripts() {
@@ -433,6 +1080,7 @@ function industrial_welding_scripts() {
 		array(
 			'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
 			'nonce'             => wp_create_nonce( 'industrial_welding_nonce' ),
+			'finderUrl'         => industrial_welding_get_finder_page_url(),
 			'compareUrl'        => industrial_welding_get_compare_page_url(),
 			'compareQueryKey'   => industrial_welding_get_compare_query_key(),
 			'compareMinSelect'  => 2,
@@ -845,6 +1493,10 @@ function industrial_welding_ensure_core_pages() {
 	industrial_welding_ensure_shop_page();
 
 	$pages = array(
+		'finder'  => array(
+			'title'    => __( 'Welder Finder', 'industrial-welding' ),
+			'template' => 'page-finder.php',
+		),
 		'compare' => array(
 			'title'    => __( 'Compare Machines', 'industrial-welding' ),
 			'template' => 'page-compare.php',

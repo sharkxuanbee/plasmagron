@@ -4,7 +4,7 @@ Theme URI: https://plasmagron.com/
 Author: Plasmagron Development Team
 Author URI: https://plasmagron.com/
 Description: A premium industrial B2B WordPress theme for heavy welding machinery and plasma cutters. Features a WooCommerce-powered product catalog, dark industrial design, and product comparison functionality.
-Version: 2.1.0
+Version: 2.2.0
 Tested up to: 6.4
 Requires PHP: 8.0
 License: GNU General Public License v2 or later
@@ -869,6 +869,11 @@ textarea {
 	background: rgba(15, 23, 42, 0.92);
 }
 
+.industrial-compare-table-wrap {
+	-webkit-overflow-scrolling: touch;
+	scrollbar-color: #475569 rgba(15, 23, 42, 0.6);
+}
+
 .industrial-sticky-cta {
 	position: fixed;
 	left: 0;
@@ -972,6 +977,20 @@ textarea {
 
 .admin-bar .industrial-sticky-cta {
 	bottom: 32px;
+}
+
+.finder-step--active {
+	animation: fadeInUp 0.35s ease-out;
+}
+
+.finder-step--invalid .finder-choice input + span {
+	border-color: rgba(251, 191, 36, 0.55);
+	box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.24);
+}
+
+.finder-choice input:focus + span {
+	border-color: #f59e0b;
+	box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
 }
 
 @media (max-width: 782px) {
