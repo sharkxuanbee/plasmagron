@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $navigation_items = industrial_welding_get_navigation_items();
+$finder_url       = industrial_welding_get_finder_page_url();
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
@@ -36,6 +37,8 @@ $navigation_items = industrial_welding_get_navigation_items();
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
 				<div class="flex items-center justify-between gap-4 text-xs uppercase tracking-[0.18em] text-slate-400 font-semibold">
 					<div class="flex items-center gap-4">
+						<span><?php esc_html_e( 'Finder', 'industrial-welding' ); ?></span>
+						<span class="text-slate-700">/</span>
 						<span><?php esc_html_e( 'Browse Machines', 'industrial-welding' ); ?></span>
 						<span class="text-slate-700">/</span>
 						<span><?php esc_html_e( 'Compare Shortlists', 'industrial-welding' ); ?></span>
@@ -94,8 +97,8 @@ $navigation_items = industrial_welding_get_navigation_items();
 					<a href="<?php echo esc_url( industrial_welding_get_catalog_url() ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
 						<?php echo esc_html( industrial_welding_get_machine_label( true ) ); ?>
 					</a>
-					<a href="<?php echo esc_url( industrial_welding_get_contact_page_url() ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+						<?php esc_html_e( 'Open Finder', 'industrial-welding' ); ?>
 					</a>
 				</div>
 
@@ -140,8 +143,8 @@ $navigation_items = industrial_welding_get_navigation_items();
 					<a href="<?php echo esc_url( industrial_welding_get_catalog_url() ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
 						<?php echo esc_html( industrial_welding_get_machine_label( true ) ); ?>
 					</a>
-					<a href="<?php echo esc_url( industrial_welding_get_contact_page_url() ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+						<?php esc_html_e( 'Open Finder', 'industrial-welding' ); ?>
 					</a>
 				</div>
 

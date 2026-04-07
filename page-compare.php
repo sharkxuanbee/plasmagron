@@ -14,6 +14,7 @@ get_header();
 $compare_query_key = industrial_welding_get_compare_query_key();
 $requested_ids     = industrial_welding_get_requested_compare_ids();
 $catalog_url       = industrial_welding_get_catalog_url();
+$finder_url        = industrial_welding_get_finder_page_url();
 $contact_url       = industrial_welding_get_contact_page_url();
 $products_data     = array();
 
@@ -73,18 +74,20 @@ if ( ! empty( $requested_ids ) ) {
 					<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
 						<?php esc_html_e( 'Return To Catalog', 'industrial-welding' ); ?>
 					</a>
-					<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
-						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php esc_html_e( 'Open Finder', 'industrial-welding' ); ?>
 					</a>
 				</div>
 			</div>
 
 			<div class="rounded-[1.8rem] border border-slate-800 bg-slate-900/78 p-6 shadow-[0_24px_55px_rgba(2,6,23,0.42)]">
-				<p class="text-xs uppercase tracking-[0.24em] text-slate-500 font-semibold"><?php esc_html_e( 'Reserved Slot', 'industrial-welding' ); ?></p>
-				<h2 class="mt-3 text-2xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Finder returns in V2.2.0', 'industrial-welding' ); ?></h2>
-				<p class="mt-3 text-sm text-slate-300 leading-relaxed"><?php esc_html_e( 'This space is intentionally reserved for the guided Finder experience. For now, use the catalog and compare flow to narrow options without dead-end links.', 'industrial-welding' ); ?></p>
-				<div class="mt-5 rounded-2xl border border-dashed border-slate-700 bg-slate-950/70 p-4 text-sm text-slate-400">
-					<?php esc_html_e( 'Finder CTA placeholder kept here so the future guided flow can plug into the same decision surface.', 'industrial-welding' ); ?>
+				<p class="text-xs uppercase tracking-[0.24em] text-slate-500 font-semibold"><?php esc_html_e( 'Guided Reset', 'industrial-welding' ); ?></p>
+				<h2 class="mt-3 text-2xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Not sure these are the right machines?', 'industrial-welding' ); ?></h2>
+				<p class="mt-3 text-sm text-slate-300 leading-relaxed"><?php esc_html_e( 'Compare works best when the shortlist is already plausible. If the current picks still feel uncertain, switch to Finder and rebuild the selection from application fit, thickness, skill, and budget.', 'industrial-welding' ); ?></p>
+				<div class="mt-5">
+					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-cyan-400/35 bg-cyan-400/10 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-cyan-100 transition hover:border-cyan-300 hover:text-white font-rajdhani">
+						<?php esc_html_e( 'Refine With Finder', 'industrial-welding' ); ?>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -277,10 +280,18 @@ if ( ! empty( $requested_ids ) ) {
 					</div>
 				</div>
 
-				<div class="rounded-[1.8rem] border border-dashed border-slate-700 bg-slate-900/50 p-7">
-					<p class="text-xs uppercase tracking-[0.24em] text-slate-500 font-semibold"><?php esc_html_e( 'Finder Placeholder', 'industrial-welding' ); ?></p>
-					<h2 class="mt-3 text-2xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Reserved return point', 'industrial-welding' ); ?></h2>
-					<p class="mt-3 text-sm text-slate-300 leading-relaxed"><?php esc_html_e( 'When Finder lands in V2.2.0, this box becomes the return path from compare back into the guided recommendation flow.', 'industrial-welding' ); ?></p>
+				<div class="rounded-[1.8rem] border border-slate-800 bg-slate-900/72 p-7">
+					<p class="text-xs uppercase tracking-[0.24em] text-slate-500 font-semibold"><?php esc_html_e( 'Finder Return Path', 'industrial-welding' ); ?></p>
+					<h2 class="mt-3 text-2xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Use Finder when compare exposes a mismatch', 'industrial-welding' ); ?></h2>
+					<p class="mt-3 text-sm text-slate-300 leading-relaxed"><?php esc_html_e( 'If these machines are too different, too advanced, or too expensive, go back through Finder and let the recommendation logic rebuild the shortlist from the actual requirements.', 'industrial-welding' ); ?></p>
+					<div class="mt-5 flex flex-col gap-3">
+						<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+							<?php esc_html_e( 'Open Finder', 'industrial-welding' ); ?>
+						</a>
+						<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
+							<?php esc_html_e( 'Back To Catalog Filters', 'industrial-welding' ); ?>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -301,12 +312,15 @@ if ( ! empty( $requested_ids ) ) {
 					<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
 						<?php esc_html_e( 'Browse Machines', 'industrial-welding' ); ?>
 					</a>
+					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php esc_html_e( 'Open Finder', 'industrial-welding' ); ?>
+					</a>
 					<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
 						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
 					</a>
 				</div>
-				<div class="mt-8 inline-flex rounded-full border border-dashed border-slate-700 bg-slate-900/70 px-4 py-2 text-sm text-slate-400">
-					<?php esc_html_e( 'Finder placeholder remains visible here so the future guided flow has a clear return point.', 'industrial-welding' ); ?>
+				<div class="mt-8 inline-flex rounded-full border border-slate-700 bg-slate-900/70 px-4 py-2 text-sm text-slate-400">
+					<?php esc_html_e( 'Finder is the faster route when you are starting from application requirements instead of model names.', 'industrial-welding' ); ?>
 				</div>
 			</div>
 		</div>

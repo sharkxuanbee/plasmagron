@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 
 $catalog_url       = industrial_welding_get_catalog_url();
+$finder_url        = industrial_welding_get_finder_page_url();
 $compare_url       = industrial_welding_get_compare_page_url();
 $contact_url       = industrial_welding_get_contact_page_url();
 $featured_query    = new WP_Query( industrial_welding_get_featured_products_query_args( 4 ) );
@@ -60,11 +61,49 @@ $usage_scene_terms = taxonomy_exists( 'usage_scene' )
 	)
 	: array();
 
+$category_entry_url         = $catalog_url;
+$category_entry_title       = __( 'Open machine-type landings', 'industrial-welding' );
+$category_entry_description = __( 'Use category pages when the buyer already knows the machine family and only needs a cleaner starting point than the full catalog.', 'industrial-welding' );
+$category_entry_label       = __( 'Browse Categories', 'industrial-welding' );
+
+if ( $product_categories && ! is_wp_error( $product_categories ) ) {
+	$primary_category_link = get_term_link( $product_categories[0] );
+
+	if ( ! is_wp_error( $primary_category_link ) ) {
+		$category_entry_url         = $primary_category_link;
+		$category_entry_title       = sprintf(
+			/* translators: %s: product category name */
+			__( 'Start with %s', 'industrial-welding' ),
+			$product_categories[0]->name
+		);
+		$category_entry_description = __( 'Send buyers straight into a machine-type landing page, then let filters and compare refine the shortlist from there.', 'industrial-welding' );
+		$category_entry_label       = sprintf(
+			/* translators: %s: product category name */
+			__( 'Open %s', 'industrial-welding' ),
+			$product_categories[0]->name
+		);
+	}
+}
+
 $quick_entries = array(
 	array(
+		'eyebrow'     => __( 'Finder', 'industrial-welding' ),
+		'title'       => __( 'Use guided selection first', 'industrial-welding' ),
+		'description' => __( 'Start with Finder when the buyer knows the job requirements but does not know which machine should make the shortlist yet.', 'industrial-welding' ),
+		'url'         => $finder_url,
+		'label'       => __( 'Start Finder', 'industrial-welding' ),
+	),
+	array(
+		'eyebrow'     => __( 'Category', 'industrial-welding' ),
+		'title'       => $category_entry_title,
+		'description' => $category_entry_description,
+		'url'         => $category_entry_url,
+		'label'       => $category_entry_label,
+	),
+	array(
 		'eyebrow'     => __( 'Catalog', 'industrial-welding' ),
-		'title'       => __( 'Browse machine types', 'industrial-welding' ),
-		'description' => __( 'Start with the full catalog when buyers need a broad view of the lineup before narrowing options.', 'industrial-welding' ),
+		'title'       => __( 'Browse all machines', 'industrial-welding' ),
+		'description' => __( 'Open the full product list when the buyer needs a wide view of the lineup before applying filters or compare.', 'industrial-welding' ),
 		'url'         => $catalog_url,
 		'label'       => __( 'Open Catalog', 'industrial-welding' ),
 	),
@@ -75,30 +114,23 @@ $quick_entries = array(
 		'url'         => $compare_url,
 		'label'       => __( 'Go To Compare', 'industrial-welding' ),
 	),
-	array(
-		'eyebrow'     => __( 'Quote', 'industrial-welding' ),
-		'title'       => __( 'Talk to sales', 'industrial-welding' ),
-		'description' => __( 'Route procurement questions, documentation requests, and bulk inquiries directly to the team.', 'industrial-welding' ),
-		'url'         => $contact_url,
-		'label'       => industrial_welding_get_request_quote_label(),
-	),
 );
 
 $how_to_choose_steps = array(
 	array(
 		'step'        => '01',
-		'title'       => __( 'Start from application fit', 'industrial-welding' ),
-		'description' => __( 'Use category and scenario cues first. The goal is to remove obviously wrong options before looking at detailed specs.', 'industrial-welding' ),
+		'title'       => __( 'Choose Finder or a category landing', 'industrial-welding' ),
+		'description' => __( 'Finder is for requirement-led buyers. Category landings are for buyers who already know the machine family and need a faster entry point.', 'industrial-welding' ),
 	),
 	array(
 		'step'        => '02',
-		'title'       => __( 'Compare the buying-critical specs', 'industrial-welding' ),
-		'description' => __( 'Amperage, power input, duty cycle, and support readiness should answer most of the shortlist decisions quickly.', 'industrial-welding' ),
+		'title'       => __( 'Use filters and compare to tighten the shortlist', 'industrial-welding' ),
+		'description' => __( 'Usage, skill, budget, amperage, power input, and duty cycle should narrow the field before anyone asks for a quote.', 'industrial-welding' ),
 	),
 	array(
 		'step'        => '03',
-		'title'       => __( 'Convert only after confidence is high', 'industrial-welding' ),
-		'description' => __( 'Move from detail or compare into quote or checkout after the shortlist is stable, not before.', 'industrial-welding' ),
+		'title'       => __( 'Move into detail, quote, or checkout only after confidence is high', 'industrial-welding' ),
+		'description' => __( 'The conversion step should happen after the shortlist is credible, not while the buyer is still guessing which machine fits.', 'industrial-welding' ),
 	),
 );
 
@@ -170,15 +202,15 @@ if ( empty( $use_case_entries ) ) {
 					<?php esc_html_e( 'From machine discovery to decision, without broken steps', 'industrial-welding' ); ?>
 				</h1>
 				<p class="mt-6 max-w-3xl text-lg md:text-xl text-slate-300 leading-relaxed">
-					<?php esc_html_e( 'Browse the catalog, shortlist the right machines, compare the tradeoffs, then move into detail, quote, or checkout from a single consistent flow.', 'industrial-welding' ); ?>
+					<?php esc_html_e( 'Start with Finder, a category landing, or the full catalog. Each path leads into the same shortlist, compare, detail, quote, and checkout chain.', 'industrial-welding' ); ?>
 				</p>
 
 				<div class="mt-8 flex flex-col sm:flex-row gap-3">
-					<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-						<?php esc_html_e( 'Browse Machines', 'industrial-welding' ); ?>
+					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+						<?php esc_html_e( 'Start Finder', 'industrial-welding' ); ?>
 					</a>
-					<a href="<?php echo esc_url( $compare_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
-						<?php esc_html_e( 'Compare Machines', 'industrial-welding' ); ?>
+					<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php esc_html_e( 'Browse Machines', 'industrial-welding' ); ?>
 					</a>
 				</div>
 
@@ -203,18 +235,18 @@ if ( empty( $use_case_entries ) ) {
 					<div class="mt-5 grid grid-cols-1 gap-3">
 						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
 							<p class="text-xs uppercase tracking-[0.18em] text-amber-300 font-semibold">01</p>
-							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Open the catalog', 'industrial-welding' ); ?></p>
-							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Use categories and machine cards to narrow the initial pool quickly.', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Choose Finder or a category', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Open the guided route when the fit is unclear, or start from a machine-type landing when the family is already known.', 'industrial-welding' ); ?></p>
 						</div>
 						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
 							<p class="text-xs uppercase tracking-[0.18em] text-amber-300 font-semibold">02</p>
-							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Compare the shortlist', 'industrial-welding' ); ?></p>
-							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Move into compare as soon as there are at least two realistic candidates.', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Filter and compare the shortlist', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Move into compare as soon as there are at least two realistic candidates and use filters to remove weak fits.', 'industrial-welding' ); ?></p>
 						</div>
 						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
 							<p class="text-xs uppercase tracking-[0.18em] text-amber-300 font-semibold">03</p>
 							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Convert from confidence', 'industrial-welding' ); ?></p>
-							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Finish on the detail page where the machine can move to quote or purchase cleanly.', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Finish on the detail page where the machine can move to quote or purchase cleanly after the selection logic is already clear.', 'industrial-welding' ); ?></p>
 						</div>
 					</div>
 				</div>
@@ -249,7 +281,7 @@ if ( empty( $use_case_entries ) ) {
 			</div>
 		</div>
 
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+		<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
 			<?php foreach ( $quick_entries as $entry ) : ?>
 				<a href="<?php echo esc_url( $entry['url'] ); ?>" class="group rounded-[1.7rem] border border-slate-800 bg-slate-950/75 p-6 shadow-[0_20px_50px_rgba(2,6,23,0.35)] transition hover:-translate-y-1 hover:border-amber-300/40">
 					<p class="text-xs uppercase tracking-[0.2em] text-amber-300 font-semibold"><?php echo esc_html( $entry['eyebrow'] ); ?></p>
@@ -390,8 +422,8 @@ if ( empty( $use_case_entries ) ) {
 					<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
 						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
 					</a>
-					<a href="<?php echo esc_url( industrial_welding_get_contact_phone_href() ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
-						<?php echo esc_html( industrial_welding_get_contact_phone_label() ); ?>
+					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php esc_html_e( 'Open Finder', 'industrial-welding' ); ?>
 					</a>
 				</div>
 			</div>
