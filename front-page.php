@@ -1,374 +1,402 @@
 <?php
 /**
- * The front page template
+ * The front page template.
  *
  * @package Industrial_Welding
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 get_header();
 
-$featured_query = new WP_Query( industrial_welding_get_featured_products_query_args( 3 ) );
-$catalog_url    = industrial_welding_get_catalog_url();
-$compare_url    = industrial_welding_get_compare_page_url();
+$catalog_url       = industrial_welding_get_catalog_url();
+$compare_url       = industrial_welding_get_compare_page_url();
+$contact_url       = industrial_welding_get_contact_page_url();
+$featured_query    = new WP_Query( industrial_welding_get_featured_products_query_args( 4 ) );
+$featured_machines = array();
+
+if ( $featured_query->have_posts() ) {
+	while ( $featured_query->have_posts() ) {
+		$featured_query->the_post();
+		$product = industrial_welding_is_woocommerce_active() ? wc_get_product( get_the_ID() ) : null;
+		$term    = industrial_welding_get_primary_product_term( get_the_ID() );
+
+		$featured_machines[] = array(
+			'id'         => get_the_ID(),
+			'title'      => get_the_title(),
+			'permalink'  => get_permalink(),
+			'thumbnail'  => get_the_post_thumbnail_url( get_the_ID(), 'medium_large' ),
+			'price_html' => $product ? $product->get_price_html() : '',
+			'summary'    => $product ? industrial_welding_get_product_summary( $product, 20 ) : get_the_excerpt(),
+			'category'   => $term ? $term->name : industrial_welding_get_machine_label(),
+			'specs'      => industrial_welding_get_product_spec_entries( get_the_ID(), array( 'amperage', 'input_voltage', 'duty_cycle' ) ),
+		);
+	}
+
+	wp_reset_postdata();
+}
+
+$product_categories = get_terms(
+	array(
+		'taxonomy'   => 'product_cat',
+		'hide_empty' => true,
+		'orderby'    => 'count',
+		'order'      => 'DESC',
+		'number'     => 3,
+	)
+);
+
+$usage_scene_terms = taxonomy_exists( 'usage_scene' )
+	? get_terms(
+		array(
+			'taxonomy'   => 'usage_scene',
+			'hide_empty' => true,
+			'orderby'    => 'count',
+			'order'      => 'DESC',
+			'number'     => 3,
+		)
+	)
+	: array();
+
+$quick_entries = array(
+	array(
+		'eyebrow'     => __( 'Catalog', 'industrial-welding' ),
+		'title'       => __( 'Browse machine types', 'industrial-welding' ),
+		'description' => __( 'Start with the full catalog when buyers need a broad view of the lineup before narrowing options.', 'industrial-welding' ),
+		'url'         => $catalog_url,
+		'label'       => __( 'Open Catalog', 'industrial-welding' ),
+	),
+	array(
+		'eyebrow'     => __( 'Compare', 'industrial-welding' ),
+		'title'       => __( 'Build a shortlist', 'industrial-welding' ),
+		'description' => __( 'Use compare when the buyer already has a few candidate machines and wants the differences laid out clearly.', 'industrial-welding' ),
+		'url'         => $compare_url,
+		'label'       => __( 'Go To Compare', 'industrial-welding' ),
+	),
+	array(
+		'eyebrow'     => __( 'Quote', 'industrial-welding' ),
+		'title'       => __( 'Talk to sales', 'industrial-welding' ),
+		'description' => __( 'Route procurement questions, documentation requests, and bulk inquiries directly to the team.', 'industrial-welding' ),
+		'url'         => $contact_url,
+		'label'       => industrial_welding_get_request_quote_label(),
+	),
+);
+
+$how_to_choose_steps = array(
+	array(
+		'step'        => '01',
+		'title'       => __( 'Start from application fit', 'industrial-welding' ),
+		'description' => __( 'Use category and scenario cues first. The goal is to remove obviously wrong options before looking at detailed specs.', 'industrial-welding' ),
+	),
+	array(
+		'step'        => '02',
+		'title'       => __( 'Compare the buying-critical specs', 'industrial-welding' ),
+		'description' => __( 'Amperage, power input, duty cycle, and support readiness should answer most of the shortlist decisions quickly.', 'industrial-welding' ),
+	),
+	array(
+		'step'        => '03',
+		'title'       => __( 'Convert only after confidence is high', 'industrial-welding' ),
+		'description' => __( 'Move from detail or compare into quote or checkout after the shortlist is stable, not before.', 'industrial-welding' ),
+	),
+);
+
+$trust_blocks = array(
+	array(
+		'title'       => __( 'Industrial-first detail pages', 'industrial-welding' ),
+		'description' => __( 'Every featured machine can route buyers into specs, compare, quote, or checkout without dead ends.', 'industrial-welding' ),
+	),
+	array(
+		'title'       => __( 'Compare-ready catalog flow', 'industrial-welding' ),
+		'description' => __( 'The listing experience is optimized for shortlist building first, not for hiding machines behind complex filters.', 'industrial-welding' ),
+	),
+	array(
+		'title'       => __( 'Support-backed conversion path', 'industrial-welding' ),
+		'description' => __( 'Warranty, technical support, and documentation stay visible throughout the decision chain.', 'industrial-welding' ),
+	),
+);
+
+$use_case_entries = array();
+
+if ( ! empty( $usage_scene_terms ) && ! is_wp_error( $usage_scene_terms ) ) {
+	foreach ( $usage_scene_terms as $usage_term ) {
+		$usage_term_link = get_term_link( $usage_term );
+
+		if ( is_wp_error( $usage_term_link ) ) {
+			continue;
+		}
+
+		$use_case_entries[] = array(
+			'title'       => $usage_term->name,
+			'description' => $usage_term->description ? wp_trim_words( wp_strip_all_tags( $usage_term->description ), 18 ) : __( 'Open the matching machine options for this usage scenario.', 'industrial-welding' ),
+			'url'         => $usage_term_link,
+			'label'       => __( 'Open Scenario', 'industrial-welding' ),
+		);
+	}
+}
+
+if ( empty( $use_case_entries ) ) {
+	$use_case_entries = array(
+		array(
+			'title'       => __( 'Fabrication Shops', 'industrial-welding' ),
+			'description' => __( 'Browse machines suited to repeatable shop throughput and easy comparison across output ranges.', 'industrial-welding' ),
+			'url'         => $catalog_url,
+			'label'       => __( 'Browse Machines', 'industrial-welding' ),
+		),
+		array(
+			'title'       => __( 'Procurement Teams', 'industrial-welding' ),
+			'description' => __( 'Jump into compare when internal approval depends on a clean side-by-side summary of the shortlist.', 'industrial-welding' ),
+			'url'         => $compare_url,
+			'label'       => __( 'Compare Options', 'industrial-welding' ),
+		),
+		array(
+			'title'       => __( 'Bulk Buyers', 'industrial-welding' ),
+			'description' => __( 'Go directly to the quote path when pricing, availability, or documentation needs a tailored response.', 'industrial-welding' ),
+			'url'         => $contact_url,
+			'label'       => industrial_welding_get_request_quote_label(),
+		),
+	);
+}
 ?>
 
-<section class="relative bg-gray-900 overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/95 to-transparent z-10"></div>
-    <div class="absolute inset-0">
-        <img 
-            src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=1920&q=80" 
-            alt="<?php esc_attr_e( 'Industrial welding machinery', 'industrial-welding' ); ?>" 
-            class="w-full h-full object-cover opacity-30"
-        >
-    </div>
-    
-    <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-48">
-        <div class="max-w-3xl">
-            <span class="inline-block px-4 py-1 bg-yellow-500/20 text-yellow-500 text-sm font-semibold tracking-wider uppercase mb-6 font-rajdhani">
-                <?php esc_html_e( 'Industrial Grade Equipment', 'industrial-welding' ); ?>
-            </span>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-rajdhani leading-tight">
-                <?php esc_html_e( 'Precision Welding Solutions for Heavy Industrial Applications', 'industrial-welding' ); ?>
-            </h1>
-            <p class="text-xl text-gray-300 mb-8 leading-relaxed">
-                <?php esc_html_e( 'Professional plasma cutters, MIG, and TIG welders engineered for maximum performance, durability, and efficiency in the most demanding B2B environments.', 'industrial-welding' ); ?>
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4">
-                <a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold text-lg rounded transition-colors font-rajdhani tracking-wide">
-                    <?php esc_html_e( 'View All Machines', 'industrial-welding' ); ?>
-                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                    </svg>
-                </a>
-                <a href="<?php echo esc_url( $compare_url ); ?>" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-600 hover:border-yellow-500 text-white font-bold text-lg rounded transition-colors font-rajdhani tracking-wide">
-                    <?php esc_html_e( 'Compare Machines', 'industrial-welding' ); ?>
-                </a>
-            </div>
-        </div>
-    </div>
+<section class="relative overflow-hidden bg-slate-950">
+	<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(245,158,11,0.24),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(34,197,94,0.14),_transparent_30%)]"></div>
+	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 xl:py-24">
+		<div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] gap-8 xl:gap-10 items-start">
+			<div class="max-w-4xl">
+				<p class="text-xs uppercase tracking-[0.34em] text-amber-300 font-semibold mb-5"><?php esc_html_e( 'Industrial Conversion Homepage', 'industrial-welding' ); ?></p>
+				<h1 class="text-4xl md:text-5xl xl:text-7xl font-bold text-white font-rajdhani leading-none">
+					<?php esc_html_e( 'From machine discovery to decision, without broken steps', 'industrial-welding' ); ?>
+				</h1>
+				<p class="mt-6 max-w-3xl text-lg md:text-xl text-slate-300 leading-relaxed">
+					<?php esc_html_e( 'Browse the catalog, shortlist the right machines, compare the tradeoffs, then move into detail, quote, or checkout from a single consistent flow.', 'industrial-welding' ); ?>
+				</p>
+
+				<div class="mt-8 flex flex-col sm:flex-row gap-3">
+					<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+						<?php esc_html_e( 'Browse Machines', 'industrial-welding' ); ?>
+					</a>
+					<a href="<?php echo esc_url( $compare_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php esc_html_e( 'Compare Machines', 'industrial-welding' ); ?>
+					</a>
+				</div>
+
+				<div class="mt-10 flex flex-wrap gap-3">
+					<?php if ( $product_categories && ! is_wp_error( $product_categories ) ) : ?>
+						<?php foreach ( $product_categories as $term ) : ?>
+							<a href="<?php echo esc_url( get_term_link( $term ) ); ?>" class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/75 px-4 py-2 text-sm text-slate-300 transition hover:border-amber-300 hover:text-amber-200">
+								<?php echo esc_html( $term->name ); ?>
+							</a>
+						<?php endforeach; ?>
+					<?php else : ?>
+						<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/75 px-4 py-2 text-sm text-slate-300"><?php esc_html_e( 'Compare-ready catalog', 'industrial-welding' ); ?></span>
+						<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/75 px-4 py-2 text-sm text-slate-300"><?php esc_html_e( 'Quote or checkout path', 'industrial-welding' ); ?></span>
+						<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/75 px-4 py-2 text-sm text-slate-300"><?php esc_html_e( 'Support-first buying flow', 'industrial-welding' ); ?></span>
+					<?php endif; ?>
+				</div>
+			</div>
+
+			<div class="space-y-5">
+				<div class="rounded-[1.8rem] border border-slate-800 bg-slate-900/80 p-6 shadow-[0_24px_55px_rgba(2,6,23,0.42)]">
+					<p class="text-xs uppercase tracking-[0.24em] text-slate-500 font-semibold"><?php esc_html_e( 'Core Route', 'industrial-welding' ); ?></p>
+					<div class="mt-5 grid grid-cols-1 gap-3">
+						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+							<p class="text-xs uppercase tracking-[0.18em] text-amber-300 font-semibold">01</p>
+							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Open the catalog', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Use categories and machine cards to narrow the initial pool quickly.', 'industrial-welding' ); ?></p>
+						</div>
+						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+							<p class="text-xs uppercase tracking-[0.18em] text-amber-300 font-semibold">02</p>
+							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Compare the shortlist', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Move into compare as soon as there are at least two realistic candidates.', 'industrial-welding' ); ?></p>
+						</div>
+						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+							<p class="text-xs uppercase tracking-[0.18em] text-amber-300 font-semibold">03</p>
+							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Convert from confidence', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Finish on the detail page where the machine can move to quote or purchase cleanly.', 'industrial-welding' ); ?></p>
+						</div>
+					</div>
+				</div>
+
+				<?php if ( ! empty( $featured_machines ) ) : ?>
+					<?php $hero_machine = $featured_machines[0]; ?>
+					<div class="overflow-hidden rounded-[1.8rem] border border-amber-400/20 bg-slate-900/80 shadow-[0_24px_55px_rgba(2,6,23,0.42)]">
+						<?php if ( $hero_machine['thumbnail'] ) : ?>
+							<img src="<?php echo esc_url( $hero_machine['thumbnail'] ); ?>" alt="<?php echo esc_attr( $hero_machine['title'] ); ?>" class="h-56 w-full object-cover object-center">
+						<?php endif; ?>
+						<div class="p-6">
+							<p class="text-xs uppercase tracking-[0.22em] text-amber-300 font-semibold"><?php esc_html_e( 'Featured Machine', 'industrial-welding' ); ?></p>
+							<h2 class="mt-3 text-3xl font-bold text-white font-rajdhani"><?php echo esc_html( $hero_machine['title'] ); ?></h2>
+							<p class="mt-3 text-slate-300 leading-relaxed"><?php echo esc_html( $hero_machine['summary'] ); ?></p>
+							<a href="<?php echo esc_url( $hero_machine['permalink'] ); ?>" class="mt-5 inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+								<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+			</div>
+		</div>
+	</div>
 </section>
 
-<section class="bg-gray-800 py-8 border-y border-gray-700">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div class="flex flex-col items-center">
-                <span class="text-3xl font-bold text-yellow-500 font-rajdhani">500+</span>
-                <span class="text-sm text-gray-400 mt-1"><?php esc_html_e( 'Dealers Worldwide', 'industrial-welding' ); ?></span>
-            </div>
-            <div class="flex flex-col items-center">
-                <span class="text-3xl font-bold text-yellow-500 font-rajdhani">25+</span>
-                <span class="text-sm text-gray-400 mt-1"><?php esc_html_e( 'Years Experience', 'industrial-welding' ); ?></span>
-            </div>
-            <div class="flex flex-col items-center">
-                <span class="text-3xl font-bold text-yellow-500 font-rajdhani">99%</span>
-                <span class="text-sm text-gray-400 mt-1"><?php esc_html_e( 'Customer Satisfaction', 'industrial-welding' ); ?></span>
-            </div>
-            <div class="flex flex-col items-center">
-                <span class="text-3xl font-bold text-yellow-500 font-rajdhani">24/7</span>
-                <span class="text-sm text-gray-400 mt-1"><?php esc_html_e( 'Technical Support', 'industrial-welding' ); ?></span>
-            </div>
-        </div>
-    </div>
+<section class="bg-slate-900 border-y border-slate-800">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+		<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8">
+			<div>
+				<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-2"><?php esc_html_e( 'Quick Entry', 'industrial-welding' ); ?></p>
+				<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Choose the fastest entry point for the buyer stage', 'industrial-welding' ); ?></h2>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+			<?php foreach ( $quick_entries as $entry ) : ?>
+				<a href="<?php echo esc_url( $entry['url'] ); ?>" class="group rounded-[1.7rem] border border-slate-800 bg-slate-950/75 p-6 shadow-[0_20px_50px_rgba(2,6,23,0.35)] transition hover:-translate-y-1 hover:border-amber-300/40">
+					<p class="text-xs uppercase tracking-[0.2em] text-amber-300 font-semibold"><?php echo esc_html( $entry['eyebrow'] ); ?></p>
+					<h3 class="mt-3 text-2xl font-bold text-white font-rajdhani"><?php echo esc_html( $entry['title'] ); ?></h3>
+					<p class="mt-3 text-slate-300 leading-relaxed"><?php echo esc_html( $entry['description'] ); ?></p>
+					<span class="mt-6 inline-flex items-center text-sm font-bold uppercase tracking-[0.08em] text-white transition group-hover:text-amber-200 font-rajdhani">
+						<?php echo esc_html( $entry['label'] ); ?>
+					</span>
+				</a>
+			<?php endforeach; ?>
+		</div>
+	</div>
 </section>
 
-<section class="bg-gray-900 py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <span class="inline-block px-4 py-1 bg-yellow-500/20 text-yellow-500 text-sm font-semibold tracking-wider uppercase mb-4 font-rajdhani">
-                <?php esc_html_e( 'Featured Equipment', 'industrial-welding' ); ?>
-            </span>
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 font-rajdhani">
-                <?php esc_html_e( 'Industry-Leading Machines', 'industrial-welding' ); ?>
-            </h2>
-            <p class="text-gray-400 max-w-2xl mx-auto">
-                <?php esc_html_e( 'Discover our most popular professional-grade welding machines and plasma cutters, trusted by shops worldwide.', 'industrial-welding' ); ?>
-            </p>
-        </div>
+<section class="bg-slate-950">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+		<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8">
+			<div>
+				<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-2"><?php esc_html_e( 'Best Sellers', 'industrial-welding' ); ?></p>
+				<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Machines already positioned for conversion', 'industrial-welding' ); ?></h2>
+			</div>
+			<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
+				<?php esc_html_e( 'View Full Catalog', 'industrial-welding' ); ?>
+			</a>
+		</div>
 
-        <?php if ( $featured_query->have_posts() ) : ?>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <?php
-                while ( $featured_query->have_posts() ) :
-                    $featured_query->the_post();
-                    $product = industrial_welding_is_woocommerce_active() ? wc_get_product( get_the_ID() ) : null;
-                    $machine_meta = array(
-                        'amperage'      => industrial_welding_get_product_meta( get_the_ID(), 'amperage' ),
-                        'input_voltage' => industrial_welding_get_product_meta( get_the_ID(), 'input_voltage' ),
-                        'duty_cycle'    => industrial_welding_get_product_meta( get_the_ID(), 'duty_cycle' ),
-                    );
-                    $primary_term = industrial_welding_get_primary_product_term( get_the_ID() );
-                    ?>
-                    <article id="product-<?php the_ID(); ?>" <?php post_class( 'bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-yellow-500/50 transition-all duration-300 group' ); ?>>
-                        <?php if ( has_post_thumbnail() ) : ?>
-                            <div class="relative overflow-hidden">
-                                <div class="aspect-w-16 aspect-h-9">
-                                    <?php the_post_thumbnail( 'medium_large', array( 'class' => 'w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500' ) ); ?>
-                                </div>
-                                <div class="absolute top-4 left-4">
-                                    <span class="inline-flex items-center px-3 py-1 bg-yellow-500 text-gray-900 text-xs font-bold uppercase tracking-wider rounded font-rajdhani">
-                                        <?php esc_html_e( 'Featured', 'industrial-welding' ); ?>
-                                    </span>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <div class="p-6">
-                            <?php if ( $primary_term ) : ?>
-                                <div class="mb-3">
-                                    <span class="text-xs text-yellow-500 font-medium uppercase tracking-wider">
-                                        <?php echo esc_html( $primary_term->name ); ?>
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-
-                            <h3 class="text-xl font-bold text-white mb-3 font-rajdhani group-hover:text-yellow-500 transition-colors">
-                                <a href="<?php the_permalink(); ?>">
-                                    <?php the_title(); ?>
-                                </a>
-                            </h3>
-
-                            <?php if ( has_excerpt() ) : ?>
-                                <p class="text-gray-400 text-sm mb-4 line-clamp-2">
-                                    <?php the_excerpt(); ?>
-                                </p>
-                            <?php endif; ?>
-
-                            <?php if ( $product && $product->get_price_html() ) : ?>
-                                <p class="text-lg font-bold text-yellow-500 font-rajdhani mb-4">
-                                    <?php echo wp_kses_post( $product->get_price_html() ); ?>
-                                </p>
-                            <?php endif; ?>
-
-                            <div class="flex flex-wrap gap-4 mb-6 text-sm">
-                                <?php if ( $machine_meta['amperage'] ) : ?>
-                                    <div class="flex items-center text-gray-300">
-                                        <svg class="w-4 h-4 mr-1 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                        </svg>
-                                        <span><?php echo esc_html( $machine_meta['amperage'] ); ?></span>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ( $machine_meta['input_voltage'] ) : ?>
-                                    <div class="flex items-center text-gray-300">
-                                        <svg class="w-4 h-4 mr-1 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                                        </svg>
-                                        <span><?php echo esc_html( $machine_meta['input_voltage'] ); ?></span>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-
-                            <a href="<?php the_permalink(); ?>" class="inline-flex items-center justify-center w-full px-6 py-3 bg-gray-700 hover:bg-yellow-500 hover:text-gray-900 text-white font-semibold rounded transition-colors font-rajdhani tracking-wide">
-                                <?php esc_html_e( 'View Specs', 'industrial-welding' ); ?>
-                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </a>
-                        </div>
-                    </article>
-                    <?php
-                endwhile;
-                ?>
-            </div>
-        <?php else : ?>
-            <!-- Fallback: demo product cards when no machines have been added yet -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <?php
-                $demo_machines = array(
-                    array(
-                        'title'    => __( 'PRO-CUT X200 Plasma Cutter', 'industrial-welding' ),
-                        'type'     => __( 'Plasma Cutter', 'industrial-welding' ),
-                        'desc'     => __( 'High-definition plasma cutting system for precision metal fabrication. Ideal for industrial-grade steel, aluminum, and stainless steel cutting.', 'industrial-welding' ),
-                        'amp'      => '200A',
-                        'volt'     => '380V 3-Phase',
-                        'img'      => 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=600&q=80',
-                    ),
-                    array(
-                        'title'    => __( 'WELD-MASTER MIG 350', 'industrial-welding' ),
-                        'type'     => __( 'MIG Welder', 'industrial-welding' ),
-                        'desc'     => __( 'Heavy-duty MIG welding system with synergic control. Engineered for high-volume production environments and structural fabrication.', 'industrial-welding' ),
-                        'amp'      => '350A',
-                        'volt'     => '220/380V',
-                        'img'      => 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&q=80',
-                    ),
-                    array(
-                        'title'    => __( 'PRECISION TIG AC/DC 250', 'industrial-welding' ),
-                        'type'     => __( 'TIG Welder', 'industrial-welding' ),
-                        'desc'     => __( 'Advanced AC/DC TIG welder with pulse capability. Perfect for aerospace, automotive, and precision sheet metal applications.', 'industrial-welding' ),
-                        'amp'      => '250A',
-                        'volt'     => '220V 1-Phase',
-                        'img'      => 'https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=600&q=80',
-                    ),
-                );
-
-                foreach ( $demo_machines as $machine ) :
-                ?>
-                <article class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-yellow-500/50 transition-all duration-300 group">
-                    <div class="relative overflow-hidden">
-                        <img
-                            src="<?php echo esc_url( $machine['img'] ); ?>"
-                            alt="<?php echo esc_attr( $machine['title'] ); ?>"
-                            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                            loading="lazy"
-                        >
-                        <div class="absolute top-4 left-4">
-                            <span class="inline-flex items-center px-3 py-1 bg-yellow-500 text-gray-900 text-xs font-bold uppercase tracking-wider rounded font-rajdhani">
-                                <?php esc_html_e( 'Featured', 'industrial-welding' ); ?>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-3">
-                            <span class="text-xs text-yellow-500 font-medium uppercase tracking-wider">
-                                <?php echo esc_html( $machine['type'] ); ?>
-                            </span>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-3 font-rajdhani group-hover:text-yellow-500 transition-colors">
-                            <?php echo esc_html( $machine['title'] ); ?>
-                        </h3>
-                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">
-                            <?php echo esc_html( $machine['desc'] ); ?>
-                        </p>
-                        <div class="flex flex-wrap gap-4 mb-6 text-sm">
-                            <div class="flex items-center text-gray-300">
-                                <svg class="w-4 h-4 mr-1 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
-                                <span><?php echo esc_html( $machine['amp'] ); ?></span>
-                            </div>
-                            <div class="flex items-center text-gray-300">
-                                <svg class="w-4 h-4 mr-1 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                                </svg>
-                                <span><?php echo esc_html( $machine['volt'] ); ?></span>
-                            </div>
-                        </div>
-                        <span class="inline-flex items-center justify-center w-full px-6 py-3 bg-gray-700 hover:bg-yellow-500 hover:text-gray-900 text-white font-semibold rounded transition-colors font-rajdhani tracking-wide cursor-pointer">
-                            <?php esc_html_e( 'View Specs', 'industrial-welding' ); ?>
-                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </span>
-                    </div>
-                </article>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-
-        <?php wp_reset_postdata(); ?>
-
-        <div class="text-center mt-12">
-            <a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center text-yellow-500 hover:text-yellow-400 font-semibold transition-colors">
-                <?php esc_html_e( 'View All Machines', 'industrial-welding' ); ?>
-                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                </svg>
-            </a>
-        </div>
-    </div>
+		<?php if ( ! empty( $featured_machines ) ) : ?>
+			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+				<?php foreach ( $featured_machines as $machine ) : ?>
+					<article class="group flex h-full flex-col overflow-hidden rounded-[1.6rem] border border-slate-800 bg-slate-900/75 shadow-[0_20px_50px_rgba(2,6,23,0.35)] transition hover:-translate-y-1 hover:border-amber-300/40">
+						<?php if ( $machine['thumbnail'] ) : ?>
+							<img src="<?php echo esc_url( $machine['thumbnail'] ); ?>" alt="<?php echo esc_attr( $machine['title'] ); ?>" class="h-56 w-full object-cover object-center transition duration-500 group-hover:scale-[1.03]">
+						<?php endif; ?>
+						<div class="flex flex-1 flex-col p-5">
+							<p class="text-xs uppercase tracking-[0.2em] text-amber-300 font-semibold"><?php echo esc_html( $machine['category'] ); ?></p>
+							<h3 class="mt-3 text-2xl font-bold text-white font-rajdhani"><?php echo esc_html( $machine['title'] ); ?></h3>
+							<p class="mt-3 text-sm text-slate-300 leading-relaxed line-clamp-3"><?php echo esc_html( $machine['summary'] ); ?></p>
+							<div class="mt-4 flex flex-wrap gap-2">
+								<?php foreach ( array_slice( $machine['specs'], 0, 2 ) as $entry ) : ?>
+									<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-950/70 px-3 py-2 text-xs text-slate-200">
+										<?php echo esc_html( $entry['value'] ); ?>
+									</span>
+								<?php endforeach; ?>
+							</div>
+							<?php if ( $machine['price_html'] ) : ?>
+								<div class="mt-4 text-2xl font-bold text-amber-300 font-rajdhani">
+									<?php echo wp_kses_post( $machine['price_html'] ); ?>
+								</div>
+							<?php endif; ?>
+							<a href="<?php echo esc_url( $machine['permalink'] ); ?>" class="mt-5 inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+								<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
+							</a>
+						</div>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		<?php else : ?>
+			<div class="rounded-[1.8rem] border border-dashed border-slate-700 bg-slate-900/60 p-10 text-center">
+				<h3 class="text-3xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Featured machines will appear here', 'industrial-welding' ); ?></h3>
+				<p class="mt-3 text-slate-400"><?php esc_html_e( 'Once products are marked as featured, this section becomes the homepage shortcut into the strongest conversion candidates.', 'industrial-welding' ); ?></p>
+			</div>
+		<?php endif; ?>
+	</div>
 </section>
 
-<section class="bg-gray-950 py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 font-rajdhani">
-                <?php esc_html_e( 'Why Choose Plasmagron?', 'industrial-welding' ); ?>
-            </h2>
-            <p class="text-gray-400 max-w-2xl mx-auto">
-                <?php esc_html_e( 'Built for professionals who demand reliability, performance, and longevity in their equipment.', 'industrial-welding' ); ?>
-            </p>
-        </div>
+<section class="bg-slate-900 border-y border-slate-800">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+		<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8">
+			<div>
+				<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-2"><?php esc_html_e( 'How To Choose', 'industrial-welding' ); ?></p>
+				<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'A simple decision framework for industrial buyers', 'industrial-welding' ); ?></h2>
+			</div>
+		</div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-500/20 rounded-full mb-6">
-                    <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3 font-rajdhani"><?php esc_html_e( '3-Year Warranty', 'industrial-welding' ); ?></h3>
-                <p class="text-gray-400 text-sm">
-                    <?php esc_html_e( 'Full coverage on all industrial machines. We stand behind every piece of equipment we manufacture with our industry-leading warranty.', 'industrial-welding' ); ?>
-                </p>
-            </div>
-
-            <div class="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-500/20 rounded-full mb-6">
-                    <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3 font-rajdhani"><?php esc_html_e( 'B2B Bulk Orders', 'industrial-welding' ); ?></h3>
-                <p class="text-gray-400 text-sm">
-                    <?php esc_html_e( 'Specialized pricing programs for high-volume orders. Equip your entire shop with Plasmagron machinery and save significantly.', 'industrial-welding' ); ?>
-                </p>
-            </div>
-
-            <div class="bg-gray-900 p-8 rounded-lg border border-gray-800 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-500/20 rounded-full mb-6">
-                    <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-3 font-rajdhani"><?php esc_html_e( 'Lifetime Technical Support', 'industrial-welding' ); ?></h3>
-                <p class="text-gray-400 text-sm">
-                    <?php esc_html_e( 'Expert technical support available 24/7. Our certified engineers are standing by to help with any questions or troubleshooting.', 'industrial-welding' ); ?>
-                </p>
-            </div>
-        </div>
-    </div>
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+			<?php foreach ( $how_to_choose_steps as $step ) : ?>
+				<div class="rounded-[1.7rem] border border-slate-800 bg-slate-950/75 p-6 shadow-[0_20px_50px_rgba(2,6,23,0.35)]">
+					<p class="text-5xl font-bold text-slate-700 font-rajdhani"><?php echo esc_html( $step['step'] ); ?></p>
+					<h3 class="mt-4 text-2xl font-bold text-white font-rajdhani"><?php echo esc_html( $step['title'] ); ?></h3>
+					<p class="mt-3 text-slate-300 leading-relaxed"><?php echo esc_html( $step['description'] ); ?></p>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</div>
 </section>
 
-<section class="bg-gray-900 py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-2xl p-1">
-            <div class="bg-gray-900 rounded-xl p-8 md:p-12">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 font-rajdhani">
-                            <?php esc_html_e( 'Ready to Upgrade Your Shop?', 'industrial-welding' ); ?>
-                        </h2>
-                        <p class="text-gray-300 mb-8">
-                            <?php esc_html_e( 'Get a custom quote for your facility. Our team will work with you to find the perfect equipment configuration for your specific applications.', 'industrial-welding' ); ?>
-                        </p>
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="<?php echo esc_url( industrial_welding_get_contact_page_url() ); ?>" class="inline-flex items-center justify-center px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded transition-colors font-rajdhani tracking-wide">
-                                <?php esc_html_e( 'Request a Quote', 'industrial-welding' ); ?>
-                            </a>
-                            <a href="tel:+18005551234" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-600 hover:border-white text-white font-bold rounded transition-colors font-rajdhani tracking-wide">
-                                <?php esc_html_e( 'Call 1-800-555-1234', 'industrial-welding' ); ?>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="hidden lg:block">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-gray-800 p-6 rounded-lg text-center border border-gray-700">
-                                <span class="text-4xl font-bold text-yellow-500 font-rajdhani">3</span>
-                                <p class="text-gray-400 text-sm mt-1"><?php esc_html_e( 'Year Warranty', 'industrial-welding' ); ?></p>
-                            </div>
-                            <div class="bg-gray-800 p-6 rounded-lg text-center border border-gray-700">
-                                <span class="text-4xl font-bold text-yellow-500 font-rajdhani">24/7</span>
-                                <p class="text-gray-400 text-sm mt-1"><?php esc_html_e( 'Support', 'industrial-welding' ); ?></p>
-                            </div>
-                            <div class="bg-gray-800 p-6 rounded-lg text-center border border-gray-700">
-                                <span class="text-4xl font-bold text-yellow-500 font-rajdhani">50+</span>
-                                <p class="text-gray-400 text-sm mt-1"><?php esc_html_e( 'Models Available', 'industrial-welding' ); ?></p>
-                            </div>
-                            <div class="bg-gray-800 p-6 rounded-lg text-center border border-gray-700">
-                                <span class="text-4xl font-bold text-yellow-500 font-rajdhani">100%</span>
-                                <p class="text-gray-400 text-sm mt-1"><?php esc_html_e( 'Factory Tested', 'industrial-welding' ); ?></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<section class="bg-slate-950">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+		<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8">
+			<div>
+				<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-2"><?php esc_html_e( 'Use Case Entry', 'industrial-welding' ); ?></p>
+				<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Route by buying context, not just by model name', 'industrial-welding' ); ?></h2>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+			<?php foreach ( $use_case_entries as $entry ) : ?>
+				<a href="<?php echo esc_url( $entry['url'] ); ?>" class="group rounded-[1.7rem] border border-slate-800 bg-slate-900/75 p-6 shadow-[0_20px_50px_rgba(2,6,23,0.35)] transition hover:-translate-y-1 hover:border-amber-300/40">
+					<h3 class="text-2xl font-bold text-white font-rajdhani"><?php echo esc_html( $entry['title'] ); ?></h3>
+					<p class="mt-3 text-slate-300 leading-relaxed"><?php echo esc_html( $entry['description'] ); ?></p>
+					<span class="mt-6 inline-flex items-center text-sm font-bold uppercase tracking-[0.08em] text-white transition group-hover:text-amber-200 font-rajdhani">
+						<?php echo esc_html( $entry['label'] ); ?>
+					</span>
+				</a>
+			<?php endforeach; ?>
+		</div>
+	</div>
+</section>
+
+<section class="bg-slate-900 border-y border-slate-800">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+		<div class="text-center mb-8">
+			<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-2"><?php esc_html_e( 'Trust Section', 'industrial-welding' ); ?></p>
+			<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'The conversion chain is built to stay consistent page to page', 'industrial-welding' ); ?></h2>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+			<?php foreach ( $trust_blocks as $block ) : ?>
+				<div class="rounded-[1.7rem] border border-slate-800 bg-slate-950/75 p-6 shadow-[0_20px_50px_rgba(2,6,23,0.35)]">
+					<h3 class="text-2xl font-bold text-white font-rajdhani"><?php echo esc_html( $block['title'] ); ?></h3>
+					<p class="mt-3 text-slate-300 leading-relaxed"><?php echo esc_html( $block['description'] ); ?></p>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</div>
+</section>
+
+<section class="bg-slate-950">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+		<div class="rounded-[2rem] border border-amber-400/18 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(30,41,59,0.88))] p-8 md:p-10 shadow-[0_28px_80px_rgba(2,6,23,0.5)]">
+			<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-8 items-center">
+				<div>
+					<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-3"><?php esc_html_e( 'Strong CTA', 'industrial-welding' ); ?></p>
+					<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Need a faster route to the right machine?', 'industrial-welding' ); ?></h2>
+					<p class="mt-4 max-w-3xl text-slate-300 leading-relaxed"><?php esc_html_e( 'Send the sales team your application, power setup, and quantity target. They can point you to the right machines, send the documentation, and help finalize the shortlist.', 'industrial-welding' ); ?></p>
+				</div>
+				<div class="flex flex-col sm:flex-row gap-3">
+					<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+					</a>
+					<a href="<?php echo esc_url( industrial_welding_get_contact_phone_href() ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php echo esc_html( industrial_welding_get_contact_phone_label() ); ?>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </section>
 
 <?php

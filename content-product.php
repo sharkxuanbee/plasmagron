@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $product;
 
-if ( ! $product instanceof WC_Product ) {
+if ( ! ( $product instanceof WC_Product ) ) {
 	$product = wc_get_product( get_the_ID() );
 }
 
@@ -19,79 +19,96 @@ if ( ! $product ) {
 	return;
 }
 
-$product_meta = array(
-	'amperage'      => industrial_welding_get_product_meta( get_the_ID(), 'amperage' ),
-	'input_voltage' => industrial_welding_get_product_meta( get_the_ID(), 'input_voltage' ),
-	'duty_cycle'    => industrial_welding_get_product_meta( get_the_ID(), 'duty_cycle' ),
+$product_id              = get_the_ID();
+$primary_term            = industrial_welding_get_primary_product_term( $product_id );
+$summary                 = industrial_welding_get_product_summary( $product, 22 );
+$spec_entries            = industrial_welding_get_product_spec_entries( $product_id, array( 'amperage', 'input_voltage', 'duty_cycle' ) );
+$best_for                = industrial_welding_get_product_meta( $product_id, 'best_for' );
+$selected_compare_ids    = industrial_welding_get_requested_compare_ids();
+$is_selected_for_compare = in_array( $product_id, $selected_compare_ids, true );
+$compare_now_url         = add_query_arg(
+	industrial_welding_get_compare_query_key(),
+	(string) $product_id,
+	industrial_welding_get_compare_page_url()
 );
-$primary_term = industrial_welding_get_primary_product_term( get_the_ID() );
-$summary = $product->get_short_description() ? wp_trim_words( wp_strip_all_tags( $product->get_short_description() ), 22 ) : get_the_excerpt();
 ?>
 
-<article id="product-<?php the_ID(); ?>" <?php wc_product_class( 'bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-yellow-500/50 transition-all duration-300 group', $product ); ?>>
-	<?php if ( has_post_thumbnail() ) : ?>
-		<div class="relative overflow-hidden">
-			<?php the_post_thumbnail( 'medium_large', array( 'class' => 'w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500' ) ); ?>
+<article id="product-<?php the_ID(); ?>" <?php wc_product_class( 'group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-800 bg-[linear-gradient(180deg,rgba(15,23,42,0.98),rgba(15,23,42,0.84))] shadow-[0_24px_55px_rgba(2,6,23,0.42)] transition duration-300 hover:-translate-y-1 hover:border-amber-300/40', $product ); ?>>
+	<div class="relative overflow-hidden border-b border-slate-800">
+		<?php if ( has_post_thumbnail() ) : ?>
+			<?php the_post_thumbnail( 'medium_large', array( 'class' => 'h-64 w-full object-cover object-center transition duration-500 group-hover:scale-[1.03]' ) ); ?>
+		<?php else : ?>
+			<div class="flex h-64 items-center justify-center bg-slate-950/85 text-slate-600">
+				<svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+				</svg>
+			</div>
+		<?php endif; ?>
+
+		<div class="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
 			<?php if ( $primary_term ) : ?>
-				<div class="absolute top-4 left-4">
-					<span class="inline-flex items-center px-3 py-1 bg-gray-900/80 backdrop-blur text-yellow-500 text-xs font-bold uppercase tracking-wider rounded font-rajdhani">
-						<?php echo esc_html( $primary_term->name ); ?>
-					</span>
-				</div>
+				<span class="inline-flex items-center rounded-full border border-amber-400/30 bg-slate-950/75 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-200 font-rajdhani">
+					<?php echo esc_html( $primary_term->name ); ?>
+				</span>
+			<?php endif; ?>
+			<?php if ( $product->get_price_html() ) : ?>
+				<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-950/80 px-3 py-1.5 text-sm font-bold text-white font-rajdhani">
+					<?php echo wp_kses_post( $product->get_price_html() ); ?>
+				</span>
 			<?php endif; ?>
 		</div>
-	<?php endif; ?>
+	</div>
 
-	<div class="p-6">
-		<h2 class="text-xl font-bold text-white mb-3 font-rajdhani group-hover:text-yellow-500 transition-colors line-clamp-1">
-			<a href="<?php the_permalink(); ?>">
-				<?php the_title(); ?>
-			</a>
-		</h2>
+	<div class="flex flex-1 flex-col p-6">
+		<div class="flex-1">
+			<h2 class="text-2xl font-bold text-white font-rajdhani leading-tight">
+				<a href="<?php the_permalink(); ?>" class="transition group-hover:text-amber-200">
+					<?php the_title(); ?>
+				</a>
+			</h2>
 
-		<?php if ( $summary ) : ?>
-			<p class="text-gray-400 text-sm mb-4 line-clamp-3">
-				<?php echo esc_html( $summary ); ?>
-			</p>
-		<?php endif; ?>
-
-		<?php if ( $product->get_price_html() ) : ?>
-			<p class="text-lg font-bold text-yellow-500 font-rajdhani mb-4">
-				<?php echo wp_kses_post( $product->get_price_html() ); ?>
-			</p>
-		<?php endif; ?>
-
-		<div class="space-y-2 mb-6">
-			<?php if ( $product_meta['amperage'] ) : ?>
-				<div class="flex items-center text-sm">
-					<span class="text-gray-500 w-28"><?php esc_html_e( 'Amperage', 'industrial-welding' ); ?>:</span>
-					<span class="text-gray-300 font-medium"><?php echo esc_html( $product_meta['amperage'] ); ?></span>
-				</div>
+			<?php if ( $summary ) : ?>
+				<p class="mt-4 text-slate-300 leading-relaxed line-clamp-3">
+					<?php echo esc_html( $summary ); ?>
+				</p>
 			<?php endif; ?>
-			<?php if ( $product_meta['input_voltage'] ) : ?>
-				<div class="flex items-center text-sm">
-					<span class="text-gray-500 w-28"><?php esc_html_e( 'Voltage', 'industrial-welding' ); ?>:</span>
-					<span class="text-gray-300 font-medium"><?php echo esc_html( $product_meta['input_voltage'] ); ?></span>
-				</div>
-			<?php endif; ?>
-			<?php if ( $product_meta['duty_cycle'] ) : ?>
-				<div class="flex items-center text-sm">
-					<span class="text-gray-500 w-28"><?php esc_html_e( 'Duty Cycle', 'industrial-welding' ); ?>:</span>
-					<span class="text-gray-300 font-medium"><?php echo esc_html( $product_meta['duty_cycle'] ); ?></span>
-				</div>
-			<?php endif; ?>
+
+			<div class="mt-5 flex flex-wrap gap-2">
+				<?php foreach ( $spec_entries as $entry ) : ?>
+					<div class="rounded-full border border-slate-700 bg-slate-950/70 px-3 py-2 text-xs text-slate-200">
+						<span class="text-slate-500 uppercase tracking-[0.18em] mr-2"><?php echo esc_html( $entry['label'] ); ?></span>
+						<span class="font-semibold text-white"><?php echo esc_html( $entry['value'] ); ?></span>
+					</div>
+				<?php endforeach; ?>
+			</div>
+
+			<div class="mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+				<p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold"><?php esc_html_e( 'Decision Note', 'industrial-welding' ); ?></p>
+				<p class="mt-2 text-sm text-slate-300 leading-relaxed">
+					<?php echo esc_html( $best_for ? wp_trim_words( wp_strip_all_tags( $best_for ), 16 ) : __( 'Open the detail page for the full conversion path, downloads, trust notes, and quote or purchase action.', 'industrial-welding' ) ); ?>
+				</p>
+			</div>
 		</div>
 
-		<label class="inline-flex items-center mb-4 text-sm text-gray-300 cursor-pointer">
-			<input type="checkbox" class="compare-checkbox mr-2 rounded border-gray-600 bg-gray-900 text-yellow-500 focus:ring-yellow-500" value="<?php echo esc_attr( get_the_ID() ); ?>">
-			<span><?php esc_html_e( 'Compare', 'industrial-welding' ); ?></span>
-		</label>
+		<div class="mt-6 space-y-4">
+			<label class="flex items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-950/75 px-4 py-3 text-sm text-slate-200 cursor-pointer">
+				<span class="font-semibold"><?php esc_html_e( 'Add to compare shortlist', 'industrial-welding' ); ?></span>
+				<input
+					type="checkbox"
+					class="compare-checkbox h-5 w-5 rounded border-slate-600 bg-slate-900 text-amber-400 focus:ring-amber-400"
+					value="<?php echo esc_attr( $product_id ); ?>"
+					<?php checked( $is_selected_for_compare ); ?>
+				>
+			</label>
 
-		<a href="<?php the_permalink(); ?>" class="inline-flex items-center justify-center w-full px-6 py-3 bg-gray-700 hover:bg-yellow-500 hover:text-gray-900 text-white font-semibold rounded transition-colors font-rajdhani tracking-wide group">
-			<span><?php esc_html_e( 'View Product', 'industrial-welding' ); ?></span>
-			<svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-			</svg>
-		</a>
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+				<a href="<?php the_permalink(); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+					<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
+				</a>
+				<a href="<?php echo esc_url( $compare_now_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+					<?php esc_html_e( 'Quick Compare', 'industrial-welding' ); ?>
+				</a>
+			</div>
+		</div>
 	</div>
 </article>

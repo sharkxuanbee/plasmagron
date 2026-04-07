@@ -3,7 +3,7 @@
  * Industrial Welding Theme Functions
  *
  * @package Industrial_Welding
- * @version 2.0.1
+ * @version 2.1.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -82,6 +82,54 @@ function industrial_welding_get_contact_page_url() {
 }
 
 /**
+ * Get the shared singular or plural machine label.
+ *
+ * @param bool $plural Whether to return the plural form.
+ * @return string
+ */
+function industrial_welding_get_machine_label( $plural = false ) {
+	return $plural
+		? __( 'Machines', 'industrial-welding' )
+		: __( 'Machine', 'industrial-welding' );
+}
+
+/**
+ * Get the shared request quote label.
+ *
+ * @return string
+ */
+function industrial_welding_get_request_quote_label() {
+	return __( 'Request Quote', 'industrial-welding' );
+}
+
+/**
+ * Get the sales phone label.
+ *
+ * @return string
+ */
+function industrial_welding_get_contact_phone_label() {
+	return '1-800-555-1234';
+}
+
+/**
+ * Get the sales phone href.
+ *
+ * @return string
+ */
+function industrial_welding_get_contact_phone_href() {
+	return 'tel:+18005551234';
+}
+
+/**
+ * Get the sales email address.
+ *
+ * @return string
+ */
+function industrial_welding_get_contact_email() {
+	return 'sales@plasmagron.com';
+}
+
+/**
  * Get a page URL by slug when the page exists.
  *
  * @param string $slug Page slug.
@@ -109,7 +157,7 @@ function industrial_welding_get_navigation_items() {
 			'url'   => home_url( '/' ),
 		),
 		array(
-			'label' => __( 'Machines', 'industrial-welding' ),
+			'label' => industrial_welding_get_machine_label( true ),
 			'url'   => industrial_welding_get_catalog_url(),
 		),
 	);
@@ -267,6 +315,97 @@ function industrial_welding_get_product_spec_labels() {
 		'duty_cycle'    => __( 'Duty Cycle', 'industrial-welding' ),
 		'weight'        => __( 'Weight', 'industrial-welding' ),
 	);
+}
+
+/**
+ * Get a clean product summary for cards and supporting sections.
+ *
+ * @param WC_Product|int $product Product object or ID.
+ * @param int            $length  Maximum words to keep.
+ * @return string
+ */
+function industrial_welding_get_product_summary( $product, $length = 24 ) {
+	$product_object = null;
+
+	if ( class_exists( 'WC_Product' ) && $product instanceof WC_Product ) {
+		$product_object = $product;
+	} elseif ( function_exists( 'wc_get_product' ) ) {
+		$product_object = wc_get_product( $product );
+	}
+
+	if ( ! $product_object ) {
+		return '';
+	}
+
+	$summary = wp_strip_all_tags( $product_object->get_short_description() );
+
+	if ( ! $summary ) {
+		$post = get_post( $product_object->get_id() );
+		$summary = $post ? wp_strip_all_tags( $post->post_excerpt ) : '';
+	}
+
+	if ( ! $summary ) {
+		$post = get_post( $product_object->get_id() );
+		$summary = $post ? wp_strip_all_tags( $post->post_content ) : '';
+	}
+
+	return $summary ? wp_trim_words( $summary, $length ) : '';
+}
+
+/**
+ * Get labeled product specs and filter empty values.
+ *
+ * @param int          $product_id Product ID.
+ * @param string[]|nil $keys       Optional subset of spec keys.
+ * @return array<int, array<string, string>>
+ */
+function industrial_welding_get_product_spec_entries( $product_id, $keys = null ) {
+	$labels = industrial_welding_get_product_spec_labels();
+
+	if ( is_array( $keys ) ) {
+		$labels = array_intersect_key( $labels, array_flip( $keys ) );
+	}
+
+	$entries = array();
+
+	foreach ( $labels as $key => $label ) {
+		$value = industrial_welding_get_product_meta( $product_id, $key );
+
+		if ( '' === (string) $value ) {
+			continue;
+		}
+
+		$entries[] = array(
+			'key'   => $key,
+			'label' => $label,
+			'value' => (string) $value,
+		);
+	}
+
+	return $entries;
+}
+
+/**
+ * Parse selected compare product IDs from the request.
+ *
+ * @return int[]
+ */
+function industrial_welding_get_requested_compare_ids() {
+	$raw_value = '';
+
+	if ( isset( $_GET[ industrial_welding_get_compare_query_key() ] ) ) {
+		$raw_value = sanitize_text_field( wp_unslash( $_GET[ industrial_welding_get_compare_query_key() ] ) );
+	} elseif ( isset( $_GET['machines'] ) ) {
+		$raw_value = sanitize_text_field( wp_unslash( $_GET['machines'] ) );
+	}
+
+	if ( ! $raw_value ) {
+		return array();
+	}
+
+	$requested_ids = array_map( 'absint', explode( ',', $raw_value ) );
+
+	return array_values( array_filter( array_unique( $requested_ids ) ) );
 }
 
 /**

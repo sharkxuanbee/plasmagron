@@ -17,6 +17,7 @@
 
                 mobileMenuToggle.setAttribute('aria-expanded', !isExpanded);
                 mobileMenu.classList.toggle('hidden');
+                document.body.classList.toggle('overflow-hidden', !isExpanded);
 
                 var icon = mobileMenuToggle.querySelector('svg');
                 if (icon) {
@@ -73,10 +74,7 @@
                     return;
                 }
 
-                var selectedIds = [];
-                document.querySelectorAll('.compare-checkbox:checked').forEach(function(checkbox) {
-                    selectedIds.push(checkbox.value);
-                });
+                var selectedIds = getSelectedCompareIds();
 
                 if (!selectedIds.length) {
                     return;
@@ -93,7 +91,7 @@
     });
 
     function updateCompareButton() {
-        var checkedItems = document.querySelectorAll('.compare-checkbox:checked');
+        var checkedItems = getSelectedCompareIds();
         var compareButton = document.getElementById('compare-selected-button');
 
         if (!compareButton) {
@@ -103,8 +101,17 @@
         var compareConfig = window.industrialWelding || {};
         var minSelection = compareConfig.compareMinSelect || 2;
         var baseLabel = compareButton.getAttribute('data-label') || 'Compare Selected';
+        var remaining = minSelection - checkedItems.length;
 
-        compareButton.textContent = checkedItems.length > 0 ? baseLabel + ' (' + checkedItems.length + ')' : baseLabel;
+        if (checkedItems.length === 0) {
+            compareButton.textContent = baseLabel;
+        } else if (checkedItems.length < minSelection) {
+            compareButton.textContent = baseLabel + ' (' + checkedItems.length + '/' + minSelection + ')';
+            compareButton.title = 'Select ' + remaining + ' more machine' + (remaining > 1 ? 's' : '') + ' to compare';
+        } else {
+            compareButton.textContent = baseLabel + ' (' + checkedItems.length + ')';
+            compareButton.title = '';
+        }
 
         if (checkedItems.length >= minSelection) {
             compareButton.disabled = false;
@@ -113,6 +120,16 @@
             compareButton.disabled = true;
             compareButton.classList.add('opacity-50', 'cursor-not-allowed');
         }
+    }
+
+    function getSelectedCompareIds() {
+        var selectedIds = [];
+
+        document.querySelectorAll('.compare-checkbox:checked').forEach(function(checkbox) {
+            selectedIds.push(checkbox.value);
+        });
+
+        return selectedIds;
     }
 
     window.addEventListener('load', function() {
