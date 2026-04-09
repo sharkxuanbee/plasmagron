@@ -1,8 +1,8 @@
 /*!
 Theme Name: Plasmagron Industrial
-Theme URI: https://plasmagron.com/
-Author: Plasmagron Development Team
-Author URI: https://plasmagron.com/
+Theme URI: https://plasmargon.com/
+Author: Plasmargon Development Team
+Author URI: https://plasmargon.com/
 Description: A premium industrial B2B WordPress theme for heavy welding machinery and plasma cutters. Features a WooCommerce-powered product catalog, dark industrial design, and product comparison functionality.
 Version: 2.2.0
 Tested up to: 6.4
@@ -991,6 +991,19 @@ textarea {
 .finder-choice input:focus + span {
 	border-color: #f59e0b;
 	box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+}
+
+/* Keep filled amber CTA labels dark across hover/focus/visited states. */
+.industrial-site a.bg-amber-400,
+.industrial-site a.bg-amber-400:visited,
+.industrial-site a.bg-amber-400:hover,
+.industrial-site a.bg-amber-400:focus,
+.industrial-site a.bg-amber-400:active,
+.industrial-site button.bg-amber-400,
+.industrial-site button.bg-amber-400:hover,
+.industrial-site button.bg-amber-400:focus,
+.industrial-site button.bg-amber-400:active {
+	color: #020617 !important;
 }
 
 @media (max-width: 782px) {
