@@ -11,6 +11,278 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Get the preferred public site host.
+ *
+ * @return string
+ */
+function industrial_welding_get_preferred_site_host() {
+	return 'plasmargon.com';
+}
+
+/**
+ * Get legacy hosts that should resolve to the preferred domain.
+ *
+ * @return string[]
+ */
+function industrial_welding_get_legacy_site_hosts() {
+	return array(
+		'plasmagron.com',
+		'www.plasmagron.com',
+		'www.plasmargon.com',
+	);
+}
+
+/**
+ * Normalize legacy site URLs to the preferred production domain.
+ *
+ * @param string $url URL to normalize.
+ * @return string
+ */
+function industrial_welding_normalize_site_url( $url ) {
+	if ( ! is_string( $url ) || '' === $url ) {
+		return $url;
+	}
+
+	$normalized = preg_replace(
+		array(
+			'#^(https?:)?//(?:www\.)?plasmagron\.com(?=[/:?#]|$)#i',
+			'#^(https?:)?//www\.plasmargon\.com(?=[/:?#]|$)#i',
+		),
+		array(
+			'$1//plasmargon.com',
+			'$1//plasmargon.com',
+		),
+		$url,
+		1
+	);
+
+	return is_string( $normalized ) && '' !== $normalized ? $normalized : $url;
+}
+
+/**
+ * Filter URLs so old-domain links still resolve after the domain migration.
+ *
+ * @param string $url URL to filter.
+ * @return string
+ */
+function industrial_welding_filter_normalized_url( $url ) {
+	return industrial_welding_normalize_site_url( $url );
+}
+add_filter( 'home_url', 'industrial_welding_filter_normalized_url' );
+add_filter( 'site_url', 'industrial_welding_filter_normalized_url' );
+add_filter( 'content_url', 'industrial_welding_filter_normalized_url' );
+add_filter( 'plugins_url', 'industrial_welding_filter_normalized_url' );
+add_filter( 'theme_file_uri', 'industrial_welding_filter_normalized_url' );
+add_filter( 'stylesheet_directory_uri', 'industrial_welding_filter_normalized_url' );
+add_filter( 'template_directory_uri', 'industrial_welding_filter_normalized_url' );
+add_filter( 'script_loader_src', 'industrial_welding_filter_normalized_url' );
+add_filter( 'style_loader_src', 'industrial_welding_filter_normalized_url' );
+add_filter( 'rest_url', 'industrial_welding_filter_normalized_url' );
+
+/**
+ * Normalize home/site options when they still contain the legacy domain.
+ *
+ * @param mixed $value Option value.
+ * @return mixed
+ */
+function industrial_welding_filter_normalized_site_option( $value ) {
+	if ( ! is_string( $value ) || '' === $value ) {
+		return $value;
+	}
+
+	return industrial_welding_normalize_site_url( $value );
+}
+add_filter( 'option_home', 'industrial_welding_filter_normalized_site_option' );
+add_filter( 'option_siteurl', 'industrial_welding_filter_normalized_site_option' );
+
+/**
+ * Normalize upload URLs when WordPress still stores the old host.
+ *
+ * @param array<string, string> $uploads Upload directory config.
+ * @return array<string, string>
+ */
+function industrial_welding_filter_upload_dir_urls( $uploads ) {
+	if ( isset( $uploads['baseurl'] ) ) {
+		$uploads['baseurl'] = industrial_welding_normalize_site_url( $uploads['baseurl'] );
+	}
+
+	if ( isset( $uploads['url'] ) ) {
+		$uploads['url'] = industrial_welding_normalize_site_url( $uploads['url'] );
+	}
+
+	return $uploads;
+}
+add_filter( 'upload_dir', 'industrial_welding_filter_upload_dir_urls' );
+
+/**
+ * Normalize WordPress menu item links when menus still store the old domain.
+ *
+ * @param string $host Host to check.
+ * @return bool
+ */
+function industrial_welding_is_internal_site_host( $host ) {
+	$host = strtolower( (string) $host );
+
+	return '' === $host
+		|| industrial_welding_get_preferred_site_host() === $host
+		|| in_array( $host, industrial_welding_get_legacy_site_hosts(), true );
+}
+
+/**
+ * Get the canonical URL for common internal menu labels.
+ *
+ * @param string $label Menu label.
+ * @return string
+ */
+function industrial_welding_get_internal_menu_url_by_label( $label ) {
+	$normalized_label = strtolower( trim( wp_strip_all_tags( (string) $label ) ) );
+	$normalized_label = preg_replace( '/\s+/', ' ', $normalized_label );
+	$normalized_label = is_string( $normalized_label ) ? $normalized_label : '';
+
+	switch ( $normalized_label ) {
+		case 'home':
+			return home_url( '/' );
+
+		case 'machines':
+		case 'browse machines':
+		case 'catalog overview':
+		case 'filterable category paths':
+		case 'browse all machines':
+			return industrial_welding_get_catalog_url();
+
+		case 'finder':
+		case 'open finder':
+		case 'start finder':
+		case 'welder finder':
+			return industrial_welding_get_finder_page_url();
+
+		case 'compare':
+		case 'compare shortlist':
+		case 'compare shortlists':
+		case 'quick compare':
+			return industrial_welding_get_compare_page_url();
+
+		case 'contact':
+		case 'request quote':
+		case 'documentation or bulk quote':
+		case 'privacy':
+		case 'terms':
+		case 'support':
+			return industrial_welding_get_contact_page_url();
+
+		case 'blog':
+			return industrial_welding_get_page_url_by_path( 'blog' );
+
+		default:
+			return '';
+	}
+}
+
+/**
+ * Resolve stale custom menu URLs to the current site routes.
+ *
+ * @param string   $url  Original URL.
+ * @param WP_Post|null $item Menu item when available.
+ * @return string
+ */
+function industrial_welding_resolve_menu_item_url( $url, $item = null ) {
+	$normalized_url = industrial_welding_normalize_site_url( $url );
+	$parsed_url     = wp_parse_url( $normalized_url );
+	$host           = is_array( $parsed_url ) && isset( $parsed_url['host'] ) ? strtolower( $parsed_url['host'] ) : '';
+
+	if ( ! industrial_welding_is_internal_site_host( $host ) ) {
+		return $normalized_url;
+	}
+
+	$fallback_url = '';
+
+	if ( $item && isset( $item->title ) ) {
+		$fallback_url = industrial_welding_get_internal_menu_url_by_label( $item->title );
+	}
+
+	if ( $item && isset( $item->type ) && 'custom' === $item->type && $fallback_url ) {
+		return $fallback_url;
+	}
+
+	if ( is_array( $parsed_url ) && ! empty( $parsed_url['query'] ) ) {
+		parse_str( $parsed_url['query'], $query_args );
+
+		if ( ! empty( $query_args['page_id'] ) ) {
+			$page_url = get_permalink( absint( $query_args['page_id'] ) );
+
+			if ( $page_url ) {
+				return industrial_welding_normalize_site_url( $page_url );
+			}
+
+			if ( $fallback_url ) {
+				return $fallback_url;
+			}
+		}
+	}
+
+	return $fallback_url ? $fallback_url : $normalized_url;
+}
+
+/**
+ * Normalize WordPress menu item links when menus still store the old domain.
+ *
+ * @param array<string, string> $atts Menu item attributes.
+ * @param WP_Post               $item Menu item object.
+ * @return array<string, string>
+ */
+function industrial_welding_filter_menu_link_attributes( $atts, $item ) {
+	if ( isset( $atts['href'] ) ) {
+		$atts['href'] = industrial_welding_resolve_menu_item_url( $atts['href'], $item );
+	}
+
+	return $atts;
+}
+add_filter( 'nav_menu_link_attributes', 'industrial_welding_filter_menu_link_attributes', 10, 2 );
+
+/**
+ * Allow redirects to both the preferred and legacy hosts during migration.
+ *
+ * @param string[] $hosts Allowed hosts.
+ * @return string[]
+ */
+function industrial_welding_filter_allowed_redirect_hosts( $hosts ) {
+	return array_values(
+		array_unique(
+			array_merge(
+				$hosts,
+				industrial_welding_get_legacy_site_hosts(),
+				array( industrial_welding_get_preferred_site_host() )
+			)
+		)
+	);
+}
+add_filter( 'allowed_redirect_hosts', 'industrial_welding_filter_allowed_redirect_hosts' );
+
+/**
+ * Redirect legacy-domain requests to the preferred domain.
+ */
+function industrial_welding_redirect_legacy_domain() {
+	if ( is_admin() || wp_doing_ajax() ) {
+		return;
+	}
+
+	$request_host = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) ) : '';
+
+	if ( '' === $request_host || ! in_array( $request_host, industrial_welding_get_legacy_site_hosts(), true ) ) {
+		return;
+	}
+
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/';
+	$target_url  = industrial_welding_normalize_site_url( 'https://' . $request_host . $request_uri );
+
+	if ( $target_url ) {
+		wp_safe_redirect( $target_url, 301, 'Industrial Welding' );
+		exit;
+	}
+}
+add_action( 'template_redirect', 'industrial_welding_redirect_legacy_domain', 0 );
+
+/**
  * Check whether WooCommerce is active.
  *
  * @return bool
@@ -141,7 +413,7 @@ function industrial_welding_get_contact_phone_href() {
  * @return string
  */
 function industrial_welding_get_contact_email() {
-	return 'sales@plasmagron.com';
+	return 'sales@plasmargon.com';
 }
 
 /**
