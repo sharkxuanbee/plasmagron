@@ -171,7 +171,7 @@ function industrial_welding_get_internal_menu_url_by_label( $label ) {
 			return industrial_welding_get_contact_page_url();
 
 		case 'blog':
-			return industrial_welding_get_page_url_by_path( 'blog' );
+			return industrial_welding_get_blog_page_url();
 
 		default:
 			return '';
@@ -354,6 +354,31 @@ function industrial_welding_get_contact_page_url() {
 }
 
 /**
+ * Get the blog landing URL, preferring the configured posts page.
+ *
+ * @return string
+ */
+function industrial_welding_get_blog_page_url() {
+	$posts_page_id = absint( get_option( 'page_for_posts' ) );
+
+	if ( $posts_page_id > 0 ) {
+		$posts_page_url = get_permalink( $posts_page_id );
+
+		if ( $posts_page_url ) {
+			return $posts_page_url;
+		}
+	}
+
+	$page = get_page_by_path( 'blog' );
+
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+
+	return home_url( '/blog/' );
+}
+
+/**
  * Get the Finder page URL.
  *
  * @return string
@@ -457,7 +482,11 @@ function industrial_welding_get_navigation_items() {
 	);
 
 	foreach ( $optional_pages as $slug => $label ) {
-		$url = industrial_welding_get_page_url_by_path( $slug );
+		if ( 'blog' === $slug ) {
+			$url = industrial_welding_get_blog_page_url();
+		} else {
+			$url = industrial_welding_get_page_url_by_path( $slug );
+		}
 
 		if ( ! $url ) {
 			continue;
@@ -638,6 +667,29 @@ function industrial_welding_get_product_summary( $product, $length = 24 ) {
 	}
 
 	return $summary ? wp_trim_words( $summary, $length ) : '';
+}
+
+/**
+ * Get a safe post summary for archive-style listings without rendering blocks.
+ *
+ * @param WP_Post|int $post   Post object or ID.
+ * @param int         $length Maximum words to keep.
+ * @return string
+ */
+function industrial_welding_get_post_summary( $post, $length = 24 ) {
+	$post_object = $post instanceof WP_Post ? $post : get_post( $post );
+
+	if ( ! $post_object instanceof WP_Post ) {
+		return '';
+	}
+
+	$summary = trim( wp_strip_all_tags( (string) $post_object->post_excerpt ) );
+
+	if ( '' === $summary ) {
+		$summary = trim( wp_strip_all_tags( strip_shortcodes( (string) $post_object->post_content ) ) );
+	}
+
+	return '' !== $summary ? wp_trim_words( $summary, $length ) : '';
 }
 
 /**
