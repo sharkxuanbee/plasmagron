@@ -23,11 +23,7 @@ while ( have_posts() ) :
 	$product_id   = get_the_ID();
 	$catalog_url  = industrial_welding_get_catalog_url();
 	$contact_url  = industrial_welding_get_contact_page_url();
-	$compare_url  = add_query_arg(
-		industrial_welding_get_compare_query_key(),
-		(string) $product_id,
-		industrial_welding_get_compare_page_url()
-	);
+	$compare_url  = industrial_welding_get_compare_url_for_ids( array( $product_id ) );
 	$product_meta = array(
 		'input_voltage' => industrial_welding_get_product_meta( $product_id, 'input_voltage' ),
 		'amperage'      => industrial_welding_get_product_meta( $product_id, 'amperage' ),
@@ -44,6 +40,10 @@ while ( have_posts() ) :
 	$primary_term        = industrial_welding_get_primary_product_term( $product_id );
 	$all_terms           = get_the_terms( $product_id, 'product_cat' );
 	$gallery_ids         = $product->get_gallery_image_ids();
+	$selected_compare_ids = industrial_welding_get_requested_compare_ids();
+	$is_selected_for_compare = in_array( $product_id, $selected_compare_ids, true );
+	$shortlist_add_label = __( 'Add To Compare Shortlist', 'industrial-welding' );
+	$shortlist_selected_label = __( 'Shortlisted For Compare', 'industrial-welding' );
 	$display_rating      = $product_meta['rating'] ? $product_meta['rating'] : $product->get_average_rating();
 	$review_count        = '' !== $product_meta['review_count'] ? (int) $product_meta['review_count'] : (int) $product->get_review_count();
 	$summary             = industrial_welding_get_product_summary( $product, 36 );
@@ -260,8 +260,15 @@ while ( have_posts() ) :
 									<?php endif; ?>
 								</div>
 								<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-									<a href="<?php echo esc_url( $compare_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-950/70 px-5 py-3 font-semibold text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani uppercase tracking-[0.08em]">
-										<?php esc_html_e( 'Compare This Machine', 'industrial-welding' ); ?>
+									<a
+										href="<?php echo esc_url( $compare_url ); ?>"
+										class="compare-shortlist-toggle inline-flex items-center justify-center rounded-xl border px-5 py-3 font-semibold transition font-rajdhani uppercase tracking-[0.08em] <?php echo $is_selected_for_compare ? 'border-amber-300 bg-amber-300/10 text-amber-200' : 'border-slate-700 bg-slate-950/70 text-white hover:border-amber-300 hover:text-amber-200'; ?>"
+										data-product-id="<?php echo esc_attr( $product_id ); ?>"
+										data-fallback-href="<?php echo esc_url( $compare_url ); ?>"
+										data-label-add="<?php echo esc_attr( $shortlist_add_label ); ?>"
+										data-label-selected="<?php echo esc_attr( $shortlist_selected_label ); ?>"
+									>
+										<?php echo esc_html( $is_selected_for_compare ? $shortlist_selected_label : $shortlist_add_label ); ?>
 									</a>
 									<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 font-semibold text-slate-200 transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani uppercase tracking-[0.08em]">
 										<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
@@ -476,8 +483,15 @@ while ( have_posts() ) :
 						</p>
 					</div>
 					<div class="flex flex-col sm:flex-row gap-3">
-						<a href="<?php echo esc_url( $compare_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-							<?php esc_html_e( 'Compare This Machine', 'industrial-welding' ); ?>
+						<a
+							href="<?php echo esc_url( $compare_url ); ?>"
+							class="compare-shortlist-toggle inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] transition font-rajdhani <?php echo $is_selected_for_compare ? 'border border-amber-300 bg-amber-300/10 text-amber-200' : 'bg-amber-400 text-slate-950 hover:bg-amber-300'; ?>"
+							data-product-id="<?php echo esc_attr( $product_id ); ?>"
+							data-fallback-href="<?php echo esc_url( $compare_url ); ?>"
+							data-label-add="<?php echo esc_attr( $shortlist_add_label ); ?>"
+							data-label-selected="<?php echo esc_attr( $shortlist_selected_label ); ?>"
+						>
+							<?php echo esc_html( $is_selected_for_compare ? $shortlist_selected_label : $shortlist_add_label ); ?>
 						</a>
 						<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
 							<?php esc_html_e( 'Browse More Machines', 'industrial-welding' ); ?>

@@ -14,6 +14,29 @@ $contact_url             = industrial_welding_get_contact_page_url();
 $catalog_url             = industrial_welding_get_catalog_url();
 $finder_url              = industrial_welding_get_finder_page_url();
 $compare_url             = industrial_welding_get_compare_page_url();
+$has_footer_widgets      = is_active_sidebar( 'footer-1' ) || is_active_sidebar( 'footer-2' ) || is_active_sidebar( 'footer-3' );
+$decision_navigation     = array(
+	array(
+		'label' => __( 'Welder Finder', 'industrial-welding' ),
+		'url'   => $finder_url,
+	),
+	array(
+		'label' => __( 'Catalog Overview', 'industrial-welding' ),
+		'url'   => $catalog_url,
+	),
+	array(
+		'label' => __( 'Compare Shortlist', 'industrial-welding' ),
+		'url'   => $compare_url,
+	),
+	array(
+		'label' => __( 'Filterable Category Paths', 'industrial-welding' ),
+		'url'   => $catalog_url,
+	),
+	array(
+		'label' => __( 'Documentation Or Bulk Quote', 'industrial-welding' ),
+		'url'   => $contact_url,
+	),
+);
 ?>
 
 	</main>
@@ -44,26 +67,54 @@ $compare_url             = industrial_welding_get_compare_page_url();
 
 				<div>
 					<h2 class="text-lg font-bold text-white font-rajdhani uppercase tracking-[0.14em] mb-5"><?php esc_html_e( 'Explore', 'industrial-welding' ); ?></h2>
-					<ul class="space-y-3">
-						<?php foreach ( $footer_navigation_items as $item ) : ?>
-							<li>
-								<a href="<?php echo esc_url( $item['url'] ); ?>" class="text-slate-400 transition hover:text-amber-200">
-									<?php echo esc_html( $item['label'] ); ?>
-								</a>
-							</li>
-						<?php endforeach; ?>
-					</ul>
+					<?php if ( has_nav_menu( 'footer' ) ) : ?>
+						<?php
+						wp_nav_menu(
+							array(
+								'theme_location' => 'footer',
+								'container'      => false,
+								'fallback_cb'    => false,
+								'menu_class'     => 'space-y-3',
+								'link_before'    => '<span class="text-slate-400 transition hover:text-amber-200">',
+								'link_after'     => '</span>',
+							)
+						);
+						?>
+					<?php else : ?>
+						<ul class="space-y-3">
+							<?php foreach ( $footer_navigation_items as $item ) : ?>
+								<li>
+									<a href="<?php echo esc_url( $item['url'] ); ?>" class="text-slate-400 transition hover:text-amber-200">
+										<?php echo esc_html( $item['label'] ); ?>
+									</a>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					<?php endif; ?>
 				</div>
 
 				<div>
 					<h2 class="text-lg font-bold text-white font-rajdhani uppercase tracking-[0.14em] mb-5"><?php esc_html_e( 'Decision Paths', 'industrial-welding' ); ?></h2>
-					<ul class="space-y-3 text-slate-400">
-						<li><a href="<?php echo esc_url( $finder_url ); ?>" class="transition hover:text-amber-200"><?php esc_html_e( 'Welder Finder', 'industrial-welding' ); ?></a></li>
-						<li><a href="<?php echo esc_url( $catalog_url ); ?>" class="transition hover:text-amber-200"><?php esc_html_e( 'Catalog Overview', 'industrial-welding' ); ?></a></li>
-						<li><a href="<?php echo esc_url( $compare_url ); ?>" class="transition hover:text-amber-200"><?php esc_html_e( 'Compare Shortlist', 'industrial-welding' ); ?></a></li>
-						<li><a href="<?php echo esc_url( $catalog_url ); ?>" class="transition hover:text-amber-200"><?php esc_html_e( 'Filterable Category Paths', 'industrial-welding' ); ?></a></li>
-						<li><a href="<?php echo esc_url( $contact_url ); ?>" class="transition hover:text-amber-200"><?php esc_html_e( 'Documentation Or Bulk Quote', 'industrial-welding' ); ?></a></li>
-					</ul>
+					<?php if ( has_nav_menu( 'footer-secondary' ) ) : ?>
+						<?php
+						wp_nav_menu(
+							array(
+								'theme_location' => 'footer-secondary',
+								'container'      => false,
+								'fallback_cb'    => false,
+								'menu_class'     => 'space-y-3 text-slate-400',
+								'link_before'    => '<span class="transition hover:text-amber-200">',
+								'link_after'     => '</span>',
+							)
+						);
+						?>
+					<?php else : ?>
+						<ul class="space-y-3 text-slate-400">
+							<?php foreach ( $decision_navigation as $item ) : ?>
+								<li><a href="<?php echo esc_url( $item['url'] ); ?>" class="transition hover:text-amber-200"><?php echo esc_html( $item['label'] ); ?></a></li>
+							<?php endforeach; ?>
+						</ul>
+					<?php endif; ?>
 				</div>
 
 				<div>
@@ -84,6 +135,28 @@ $compare_url             = industrial_welding_get_compare_page_url();
 					</ul>
 				</div>
 			</div>
+
+			<?php if ( $has_footer_widgets ) : ?>
+				<div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-slate-800 pt-10">
+					<?php if ( is_active_sidebar( 'footer-1' ) ) : ?>
+						<div class="text-slate-300">
+							<?php dynamic_sidebar( 'footer-1' ); ?>
+						</div>
+					<?php endif; ?>
+
+					<?php if ( is_active_sidebar( 'footer-2' ) ) : ?>
+						<div class="text-slate-300">
+							<?php dynamic_sidebar( 'footer-2' ); ?>
+						</div>
+					<?php endif; ?>
+
+					<?php if ( is_active_sidebar( 'footer-3' ) ) : ?>
+						<div class="text-slate-300">
+							<?php dynamic_sidebar( 'footer-3' ); ?>
+						</div>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
 
 			<div class="mt-12 border-t border-slate-800 pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 				<p class="text-sm text-slate-500">
