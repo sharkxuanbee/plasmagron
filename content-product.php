@@ -26,11 +26,9 @@ $spec_entries            = industrial_welding_get_product_spec_entries( $product
 $best_for                = industrial_welding_get_product_meta( $product_id, 'best_for' );
 $selected_compare_ids    = industrial_welding_get_requested_compare_ids();
 $is_selected_for_compare = in_array( $product_id, $selected_compare_ids, true );
-$compare_now_url         = add_query_arg(
-	industrial_welding_get_compare_query_key(),
-	(string) $product_id,
-	industrial_welding_get_compare_page_url()
-);
+$compare_now_url         = industrial_welding_get_compare_url_for_ids( array( $product_id ) );
+$shortlist_add_label     = __( 'Add To Shortlist', 'industrial-welding' );
+$shortlist_selected_label = __( 'Shortlisted', 'industrial-welding' );
 ?>
 
 <article id="product-<?php the_ID(); ?>" <?php wc_product_class( 'group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-800 bg-[linear-gradient(180deg,rgba(15,23,42,0.98),rgba(15,23,42,0.84))] shadow-[0_24px_55px_rgba(2,6,23,0.42)] transition duration-300 hover:-translate-y-1 hover:border-amber-300/40', $product ); ?>>
@@ -105,8 +103,15 @@ $compare_now_url         = add_query_arg(
 				<a href="<?php the_permalink(); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
 					<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
 				</a>
-				<a href="<?php echo esc_url( $compare_now_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
-					<?php esc_html_e( 'Quick Compare', 'industrial-welding' ); ?>
+				<a
+					href="<?php echo esc_url( $compare_now_url ); ?>"
+					class="compare-shortlist-toggle inline-flex items-center justify-center rounded-xl border px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] transition font-rajdhani <?php echo $is_selected_for_compare ? 'border-amber-300 text-amber-200 bg-amber-300/10' : 'border-slate-700 text-white hover:border-cyan-300 hover:text-cyan-200'; ?>"
+					data-product-id="<?php echo esc_attr( $product_id ); ?>"
+					data-fallback-href="<?php echo esc_url( $compare_now_url ); ?>"
+					data-label-add="<?php echo esc_attr( $shortlist_add_label ); ?>"
+					data-label-selected="<?php echo esc_attr( $shortlist_selected_label ); ?>"
+				>
+					<?php echo esc_html( $is_selected_for_compare ? $shortlist_selected_label : $shortlist_add_label ); ?>
 				</a>
 			</div>
 		</div>

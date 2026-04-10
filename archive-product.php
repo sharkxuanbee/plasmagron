@@ -26,7 +26,7 @@ $product_total         = $product_counts ? (int) $product_counts->publish : 0;
 $found_products        = isset( $GLOBALS['wp_query']->found_posts ) ? (int) $GLOBALS['wp_query']->found_posts : 0;
 $coverage              = industrial_welding_get_catalog_data_coverage();
 $product_categories    = industrial_welding_get_catalog_filter_terms( 'product_cat' );
-$compare_min_selection = 2;
+$compare_min_selection = industrial_welding_get_compare_min_selection();
 $selected_compare_ids  = industrial_welding_get_requested_compare_ids();
 $selected_count        = count( $selected_compare_ids );
 

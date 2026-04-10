@@ -301,6 +301,24 @@ function industrial_welding_get_compare_query_key() {
 }
 
 /**
+ * Minimum product count required for a full compare view.
+ *
+ * @return int
+ */
+function industrial_welding_get_compare_min_selection() {
+	return 2;
+}
+
+/**
+ * Browser storage key for compare shortlist persistence.
+ *
+ * @return string
+ */
+function industrial_welding_get_compare_storage_key() {
+	return 'industrial_welding_compare_shortlist';
+}
+
+/**
  * Get the compare page URL.
  *
  * @return string
@@ -313,6 +331,32 @@ function industrial_welding_get_compare_page_url() {
 	}
 
 	return home_url( '/compare/' );
+}
+
+/**
+ * Build a compare URL from a shortlist of product IDs.
+ *
+ * @param int[] $product_ids Product IDs.
+ * @return string
+ */
+function industrial_welding_get_compare_url_for_ids( $product_ids ) {
+	$product_ids = array_values(
+		array_filter(
+			array_unique(
+				array_map( 'absint', (array) $product_ids )
+			)
+		)
+	);
+
+	if ( empty( $product_ids ) ) {
+		return industrial_welding_get_compare_page_url();
+	}
+
+	return add_query_arg(
+		industrial_welding_get_compare_query_key(),
+		implode( ',', $product_ids ),
+		industrial_welding_get_compare_page_url()
+	);
 }
 
 /**
@@ -1002,20 +1046,173 @@ function industrial_welding_get_catalog_filter_terms( $taxonomy ) {
 }
 
 /**
+ * Get the current cache version used for catalog-facing derived data.
+ *
+ * @return int
+ */
+function industrial_welding_get_catalog_cache_version() {
+	$version = absint( get_option( 'industrial_welding_catalog_cache_version', 1 ) );
+
+	return $version > 0 ? $version : 1;
+}
+
+/**
+ * Build a cache key scoped to the current catalog cache version.
+ *
+ * @param string $suffix Cache suffix.
+ * @return string
+ */
+function industrial_welding_get_catalog_cache_key( $suffix ) {
+	return 'industrial_welding_' . sanitize_key( $suffix ) . '_v' . industrial_welding_get_catalog_cache_version();
+}
+
+/**
+ * Bump the shared catalog cache version once per request.
+ */
+function industrial_welding_bump_catalog_cache_version() {
+	static $did_bump = false;
+
+	if ( $did_bump ) {
+		return;
+	}
+
+	$did_bump = true;
+	update_option( 'industrial_welding_catalog_cache_version', industrial_welding_get_catalog_cache_version() + 1 );
+}
+
+/**
+ * Check whether a product meta key should invalidate catalog-facing caches.
+ *
+ * @param string $meta_key Meta key.
+ * @return bool
+ */
+function industrial_welding_is_catalog_cache_sensitive_meta_key( $meta_key ) {
+	static $meta_keys = null;
+
+	if ( null === $meta_keys ) {
+		$meta_keys = array_keys( industrial_welding_get_product_meta_config() );
+	}
+
+	return in_array( $meta_key, $meta_keys, true );
+}
+
+/**
+ * Get published product IDs for catalog-derived calculations.
+ *
+ * @param array<string, mixed> $args Optional query overrides.
+ * @return int[]
+ */
+function industrial_welding_get_catalog_product_ids( $args = array() ) {
+	$query_args = wp_parse_args(
+		$args,
+		array(
+			'post_type'              => 'product',
+			'post_status'            => 'publish',
+			'posts_per_page'         => -1,
+			'fields'                 => 'ids',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		)
+	);
+
+	return array_map( 'absint', get_posts( $query_args ) );
+}
+
+/**
+ * Invalidate derived catalog caches when a product is saved.
+ *
+ * @param int $post_id Product ID.
+ */
+function industrial_welding_invalidate_catalog_caches_on_product_save( $post_id ) {
+	if ( wp_is_post_revision( $post_id ) ) {
+		return;
+	}
+
+	industrial_welding_bump_catalog_cache_version();
+}
+add_action( 'save_post_product', 'industrial_welding_invalidate_catalog_caches_on_product_save' );
+
+/**
+ * Invalidate derived catalog caches when product publish state changes.
+ *
+ * @param string  $new_status New post status.
+ * @param string  $old_status Old post status.
+ * @param WP_Post $post       Post object.
+ */
+function industrial_welding_invalidate_catalog_caches_on_status_change( $new_status, $old_status, $post ) {
+	if ( ! $post instanceof WP_Post || 'product' !== $post->post_type || $new_status === $old_status ) {
+		return;
+	}
+
+	industrial_welding_bump_catalog_cache_version();
+}
+add_action( 'transition_post_status', 'industrial_welding_invalidate_catalog_caches_on_status_change', 10, 3 );
+
+/**
+ * Invalidate derived catalog caches when product terms change.
+ *
+ * @param int    $object_id  Object ID.
+ * @param int[]  $terms      Term IDs.
+ * @param int[]  $tt_ids     Term taxonomy IDs.
+ * @param string $taxonomy   Taxonomy slug.
+ * @param bool   $append     Whether terms are appended.
+ * @param int[]  $old_tt_ids Previous term taxonomy IDs.
+ */
+function industrial_welding_invalidate_catalog_caches_on_term_change( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
+	unset( $terms, $tt_ids, $append, $old_tt_ids );
+
+	if ( 'product' !== get_post_type( $object_id ) ) {
+		return;
+	}
+
+	if ( 'product_cat' !== $taxonomy && ! in_array( $taxonomy, industrial_welding_get_supported_catalog_taxonomies(), true ) ) {
+		return;
+	}
+
+	industrial_welding_bump_catalog_cache_version();
+}
+add_action( 'set_object_terms', 'industrial_welding_invalidate_catalog_caches_on_term_change', 10, 6 );
+
+/**
+ * Invalidate derived catalog caches when relevant product meta changes.
+ *
+ * @param int    $meta_id    Meta row ID.
+ * @param int    $object_id  Post ID.
+ * @param string $meta_key   Meta key.
+ * @param mixed  $meta_value Meta value.
+ */
+function industrial_welding_invalidate_catalog_caches_on_meta_change( $meta_id, $object_id, $meta_key, $meta_value ) {
+	unset( $meta_id, $meta_value );
+
+	if ( 'product' !== get_post_type( $object_id ) ) {
+		return;
+	}
+
+	if ( ! industrial_welding_is_catalog_cache_sensitive_meta_key( $meta_key ) ) {
+		return;
+	}
+
+	industrial_welding_bump_catalog_cache_version();
+}
+add_action( 'added_post_meta', 'industrial_welding_invalidate_catalog_caches_on_meta_change', 10, 4 );
+add_action( 'updated_post_meta', 'industrial_welding_invalidate_catalog_caches_on_meta_change', 10, 4 );
+add_action( 'deleted_post_meta', 'industrial_welding_invalidate_catalog_caches_on_meta_change', 10, 4 );
+
+/**
  * Get the data coverage counts used by the filter and Finder experience.
  *
  * @return array<string, mixed>
  */
 function industrial_welding_get_catalog_data_coverage() {
-	$product_ids = get_posts(
-		array(
-			'post_type'      => 'product',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
-		)
-	);
+	$cache_key = industrial_welding_get_catalog_cache_key( 'catalog_coverage' );
+	$cached    = get_transient( $cache_key );
+
+	if ( is_array( $cached ) && isset( $cached['rows'] ) ) {
+		return $cached;
+	}
+
+	$product_ids = industrial_welding_get_catalog_product_ids();
 
 	$total = count( $product_ids );
 	$stats = array(
@@ -1076,6 +1273,8 @@ function industrial_welding_get_catalog_data_coverage() {
 			'percent' => $total > 0 && isset( $stats[ $key ] ) ? (int) round( ( $stats[ $key ] / $total ) * 100 ) : 0,
 		);
 	}
+
+	set_transient( $cache_key, $stats, 12 * HOUR_IN_SECONDS );
 
 	return $stats;
 }
@@ -1207,15 +1406,49 @@ function industrial_welding_get_finder_recommendations( $answers, $limit = 3 ) {
 		return $result;
 	}
 
-	$product_ids = get_posts(
-		array(
-			'post_type'      => 'product',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
+	$cache_answers = $answers;
+	ksort( $cache_answers );
+
+	$cache_key = industrial_welding_get_catalog_cache_key(
+		'finder_' . md5(
+			wp_json_encode(
+				array(
+					'answers' => $cache_answers,
+					'limit'   => (int) $limit,
+				)
+			)
 		)
 	);
+	$cached    = get_transient( $cache_key );
+
+	if ( is_array( $cached ) && isset( $cached['items'] ) ) {
+		return $cached;
+	}
+
+	$candidate_query = array();
+	$tax_query       = array( 'relation' => 'AND' );
+
+	foreach ( array( 'usage_scene', 'skill_level', 'budget_range' ) as $taxonomy ) {
+		if ( empty( $answers[ $taxonomy ] ) ) {
+			continue;
+		}
+
+		$tax_query[] = array(
+			'taxonomy' => $taxonomy,
+			'field'    => 'slug',
+			'terms'    => $answers[ $taxonomy ],
+		);
+	}
+
+	if ( count( $tax_query ) > 1 ) {
+		$candidate_query['tax_query'] = $tax_query;
+	}
+
+	$product_ids = industrial_welding_get_catalog_product_ids( $candidate_query );
+
+	if ( empty( $product_ids ) ) {
+		$product_ids = industrial_welding_get_catalog_product_ids();
+	}
 
 	$scored_products = array();
 
@@ -1368,13 +1601,11 @@ function industrial_welding_get_finder_recommendations( $answers, $limit = 3 ) {
 		}
 	}
 
-	if ( count( $recommended_product_ids ) >= 2 ) {
-		$result['compare_url'] = add_query_arg(
-			industrial_welding_get_compare_query_key(),
-			implode( ',', $recommended_product_ids ),
-			industrial_welding_get_compare_page_url()
-		);
+	if ( count( $recommended_product_ids ) >= industrial_welding_get_compare_min_selection() ) {
+		$result['compare_url'] = industrial_welding_get_compare_url_for_ids( $recommended_product_ids );
 	}
+
+	set_transient( $cache_key, $result, 6 * HOUR_IN_SECONDS );
 
 	return $result;
 }
@@ -1407,7 +1638,8 @@ function industrial_welding_scripts() {
 			'finderUrl'         => industrial_welding_get_finder_page_url(),
 			'compareUrl'        => industrial_welding_get_compare_page_url(),
 			'compareQueryKey'   => industrial_welding_get_compare_query_key(),
-			'compareMinSelect'  => 2,
+			'compareMinSelect'  => industrial_welding_get_compare_min_selection(),
+			'compareStorageKey' => industrial_welding_get_compare_storage_key(),
 		)
 	);
 }
@@ -1759,6 +1991,76 @@ function industrial_welding_assign_menu_locations( $menu_id ) {
 }
 
 /**
+ * Assign a page template when the page is still using the default template.
+ *
+ * @param int    $page_id   Page ID.
+ * @param string $template  Template filename.
+ */
+function industrial_welding_maybe_assign_page_template( $page_id, $template ) {
+	if ( ! $page_id || ! $template ) {
+		return;
+	}
+
+	if ( ! file_exists( get_theme_file_path( $template ) ) ) {
+		return;
+	}
+
+	$current_template = (string) get_page_template_slug( $page_id );
+
+	if ( $current_template === $template ) {
+		return;
+	}
+
+	if ( '' === $current_template || 'default' === $current_template ) {
+		update_post_meta( $page_id, '_wp_page_template', $template );
+		return;
+	}
+
+	if ( ! file_exists( get_theme_file_path( $current_template ) ) ) {
+		update_post_meta( $page_id, '_wp_page_template', $template );
+	}
+}
+
+/**
+ * Assign the posts page when WordPress does not already have a valid one.
+ *
+ * @param int $page_id Blog page ID.
+ */
+function industrial_welding_maybe_assign_posts_page( $page_id ) {
+	$page_id = absint( $page_id );
+
+	if ( ! $page_id ) {
+		return;
+	}
+
+	$front_page_id = absint( get_option( 'page_on_front' ) );
+	$posts_page_id = absint( get_option( 'page_for_posts' ) );
+
+	if ( $posts_page_id === $page_id ) {
+		return;
+	}
+
+	if ( $posts_page_id > 0 ) {
+		$posts_page = get_post( $posts_page_id );
+
+		if (
+			$posts_page instanceof WP_Post
+			&& 'page' === $posts_page->post_type
+			&& ! in_array( $posts_page->post_status, array( 'trash', 'auto-draft' ), true )
+			&& $posts_page_id !== $front_page_id
+		) {
+			return;
+		}
+	}
+
+	if ( $page_id === $front_page_id ) {
+		return;
+	}
+
+	update_option( 'page_for_posts', $page_id );
+}
+
+/**
  * Ensure a page exists.
  *
  * @param string $slug     Page slug.
@@ -1767,7 +2069,7 @@ function industrial_welding_assign_menu_locations( $menu_id ) {
  * @return int
  */
 function industrial_welding_ensure_page( $slug, $title, $template = '' ) {
-	$page = get_page_by_path( $slug );
+	$page = get_page_by_path( $slug, OBJECT, 'page' );
 
 	if ( ! $page ) {
 		$page_id = wp_insert_post(
@@ -1783,8 +2085,8 @@ function industrial_welding_ensure_page( $slug, $title, $template = '' ) {
 		$page_id = $page->ID;
 	}
 
-	if ( ! is_wp_error( $page_id ) && $template ) {
-		update_post_meta( $page_id, '_wp_page_template', $template );
+	if ( ! is_wp_error( $page_id ) ) {
+		industrial_welding_maybe_assign_page_template( $page_id, $template );
 	}
 
 	return is_wp_error( $page_id ) ? 0 : absint( $page_id );
@@ -1827,16 +2129,20 @@ function industrial_welding_ensure_core_pages() {
 		),
 		'blog'    => array(
 			'title'    => __( 'Blog', 'industrial-welding' ),
-			'template' => '',
+			'template' => 'page-blog.php',
 		),
 		'contact' => array(
 			'title'    => __( 'Contact Us', 'industrial-welding' ),
-			'template' => '',
+			'template' => 'page-contact.php',
 		),
 	);
 
 	foreach ( $pages as $slug => $page_data ) {
-		industrial_welding_ensure_page( $slug, $page_data['title'], $page_data['template'] );
+		$page_id = industrial_welding_ensure_page( $slug, $page_data['title'], $page_data['template'] );
+
+		if ( 'blog' === $slug ) {
+			industrial_welding_maybe_assign_posts_page( $page_id );
+		}
 	}
 }
 

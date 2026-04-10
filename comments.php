@@ -7,7 +7,7 @@
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  *
- * @package plasmagron
+ * @package Industrial_Welding
  */
 
 /*
@@ -20,35 +20,36 @@ if ( post_password_required() ) {
 }
 ?>
 
-<div id="comments" class="comments-area">
+<div id="comments" class="comments-area rounded-[1.8rem] border border-slate-800 bg-slate-950/78 p-6 md:p-8 shadow-[0_24px_55px_rgba(2,6,23,0.42)]">
 
 	<?php
-	// You can start editing here -- including this comment!
 	if ( have_comments() ) :
 		?>
-		<h2 class="comments-title">
+		<h2 class="comments-title text-3xl font-bold text-white font-rajdhani">
 			<?php
-			$plasmagron_comment_count = get_comments_number();
-			if ( '1' === $plasmagron_comment_count ) {
+			$comment_count = get_comments_number();
+			if ( '1' === $comment_count ) {
 				printf(
 					/* translators: 1: title. */
-					esc_html__( 'One thought on &ldquo;%1$s&rdquo;', 'plasmagron' ),
+					esc_html__( 'One comment on "%1$s"', 'industrial-welding' ),
 					'<span>' . wp_kses_post( get_the_title() ) . '</span>'
 				);
 			} else {
-				printf( 
+				printf(
 					/* translators: 1: comment count number, 2: title. */
-					esc_html( _nx( '%1$s thought on &ldquo;%2$s&rdquo;', '%1$s thoughts on &ldquo;%2$s&rdquo;', $plasmagron_comment_count, 'comments title', 'plasmagron' ) ),
-					number_format_i18n( $plasmagron_comment_count ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					esc_html( _nx( '%1$s comment on "%2$s"', '%1$s comments on "%2$s"', $comment_count, 'comments title', 'industrial-welding' ) ),
+					number_format_i18n( $comment_count ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					'<span>' . wp_kses_post( get_the_title() ) . '</span>'
 				);
 			}
 			?>
-		</h2><!-- .comments-title -->
+		</h2>
 
-		<?php the_comments_navigation(); ?>
+		<div class="mt-6 text-sm text-slate-400">
+			<?php the_comments_navigation(); ?>
+		</div>
 
-		<ol class="comment-list">
+		<ol class="comment-list mt-8 space-y-6">
 			<?php
 			wp_list_comments(
 				array(
@@ -57,21 +58,26 @@ if ( post_password_required() ) {
 				)
 			);
 			?>
-		</ol><!-- .comment-list -->
+		</ol>
+
+		<div class="mt-6 text-sm text-slate-400">
+			<?php
+			the_comments_navigation();
+			?>
+		</div>
 
 		<?php
-		the_comments_navigation();
-
-		// If comments are closed and there are comments, let's leave a little note, shall we?
 		if ( ! comments_open() ) :
 			?>
-			<p class="no-comments"><?php esc_html_e( 'Comments are closed.', 'plasmagron' ); ?></p>
+			<p class="no-comments mt-6 text-sm text-slate-400"><?php esc_html_e( 'Comments are closed.', 'industrial-welding' ); ?></p>
 			<?php
 		endif;
 
-	endif; // Check for have_comments().
+	endif;
 
+	echo '<div class="mt-8 border-t border-slate-800 pt-8">';
 	comment_form();
+	echo '</div>';
 	?>
 
-</div><!-- #comments -->
+</div>

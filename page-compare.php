@@ -11,12 +11,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
-$compare_query_key = industrial_welding_get_compare_query_key();
-$requested_ids     = industrial_welding_get_requested_compare_ids();
-$catalog_url       = industrial_welding_get_catalog_url();
-$finder_url        = industrial_welding_get_finder_page_url();
-$contact_url       = industrial_welding_get_contact_page_url();
-$products_data     = array();
+$compare_query_key      = industrial_welding_get_compare_query_key();
+$compare_min_selection  = industrial_welding_get_compare_min_selection();
+$requested_ids          = industrial_welding_get_requested_compare_ids();
+$catalog_url            = industrial_welding_get_catalog_url();
+$finder_url             = industrial_welding_get_finder_page_url();
+$contact_url            = industrial_welding_get_contact_page_url();
+$products_data          = array();
+$selected_product_ids   = array();
+$selected_count         = 0;
+$remaining_to_compare   = $compare_min_selection;
+$has_full_compare_view  = false;
 
 if ( ! empty( $requested_ids ) ) {
 	$compare_query = new WP_Query(
@@ -56,6 +61,11 @@ if ( ! empty( $requested_ids ) ) {
 		wp_reset_postdata();
 	}
 }
+
+$selected_product_ids  = array_map( 'absint', wp_list_pluck( $products_data, 'id' ) );
+$selected_count        = count( $selected_product_ids );
+$remaining_to_compare  = max( 0, $compare_min_selection - $selected_count );
+$has_full_compare_view = $selected_count >= $compare_min_selection;
 ?>
 
 <section class="relative overflow-hidden bg-slate-950">
@@ -107,8 +117,8 @@ if ( ! empty( $requested_ids ) ) {
 					echo esc_html(
 						sprintf(
 							/* translators: %d: compared machine count */
-							_n( '%d machine selected', '%d machines selected', count( $products_data ), 'industrial-welding' ),
-							count( $products_data )
+							_n( '%d machine selected', '%d machines selected', $selected_count, 'industrial-welding' ),
+							$selected_count
 						)
 					);
 					?>
@@ -120,15 +130,13 @@ if ( ! empty( $requested_ids ) ) {
 					<?php
 					$remaining_ids = array_values(
 						array_filter(
-							$requested_ids,
+							$selected_product_ids,
 							static function( $id ) use ( $machine ) {
 								return (int) $id !== (int) $machine['id'];
 							}
 						)
 					);
-					$remove_url    = empty( $remaining_ids )
-						? industrial_welding_get_compare_page_url()
-						: add_query_arg( $compare_query_key, implode( ',', $remaining_ids ), industrial_welding_get_compare_page_url() );
+					$remove_url    = industrial_welding_get_compare_url_for_ids( $remaining_ids );
 					?>
 					<article class="overflow-hidden rounded-[1.6rem] border border-slate-800 bg-slate-950/75 shadow-[0_22px_55px_rgba(2,6,23,0.38)]">
 						<?php if ( $machine['thumbnail'] ) : ?>
@@ -146,7 +154,7 @@ if ( ! empty( $requested_ids ) ) {
 									<p class="text-xs uppercase tracking-[0.2em] text-amber-300 font-semibold"><?php echo esc_html( $machine['category'] ); ?></p>
 									<h3 class="mt-2 text-2xl font-bold text-white font-rajdhani"><?php echo esc_html( $machine['title'] ); ?></h3>
 								</div>
-								<a href="<?php echo esc_url( $remove_url ); ?>" class="inline-flex items-center rounded-full border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-300 transition hover:border-rose-300 hover:text-rose-200">
+								<a href="<?php echo esc_url( $remove_url ); ?>" class="compare-remove-button inline-flex items-center rounded-full border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-300 transition hover:border-rose-300 hover:text-rose-200" data-product-id="<?php echo esc_attr( $machine['id'] ); ?>">
 									<?php esc_html_e( 'Remove', 'industrial-welding' ); ?>
 								</a>
 							</div>
@@ -176,6 +184,7 @@ if ( ! empty( $requested_ids ) ) {
 		</div>
 	</section>
 
+	<?php if ( $has_full_compare_view ) : ?>
 	<section class="bg-slate-950">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
 			<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8">
@@ -296,6 +305,52 @@ if ( ! empty( $requested_ids ) ) {
 			</div>
 		</div>
 	</section>
+	<?php else : ?>
+	<section class="bg-slate-950">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+			<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6">
+				<div class="rounded-[1.8rem] border border-dashed border-slate-700 bg-slate-900/72 p-8 shadow-[0_24px_55px_rgba(2,6,23,0.42)]">
+					<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-3"><?php esc_html_e( 'Shortlist Pending', 'industrial-welding' ); ?></p>
+					<h2 class="text-3xl font-bold text-white font-rajdhani">
+						<?php
+						echo esc_html(
+							sprintf(
+								/* translators: %d: remaining machine count needed for compare. */
+								_n( 'Add %d more machine to unlock the side-by-side compare table', 'Add %d more machines to unlock the side-by-side compare table', $remaining_to_compare, 'industrial-welding' ),
+								$remaining_to_compare
+							)
+						);
+						?>
+					</h2>
+					<p class="mt-4 max-w-3xl text-slate-300 leading-relaxed"><?php esc_html_e( 'Single-machine entries now stay in shortlist mode. Keep this machine, return to the catalog, and add at least one more candidate before using the full compare view.', 'industrial-welding' ); ?></p>
+					<div class="mt-6 flex flex-col sm:flex-row gap-3">
+						<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+							<?php esc_html_e( 'Add More Machines', 'industrial-welding' ); ?>
+						</a>
+						<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+							<?php esc_html_e( 'Use Finder', 'industrial-welding' ); ?>
+						</a>
+					</div>
+				</div>
+
+				<div class="rounded-[1.8rem] border border-slate-800 bg-slate-900/78 p-6 shadow-[0_24px_55px_rgba(2,6,23,0.42)]">
+					<p class="text-xs uppercase tracking-[0.24em] text-slate-500 font-semibold"><?php esc_html_e( 'Current State', 'industrial-welding' ); ?></p>
+					<div class="mt-5 grid grid-cols-2 gap-4">
+						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+							<p class="text-xs uppercase tracking-[0.16em] text-slate-500 font-semibold"><?php esc_html_e( 'Selected Now', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-3xl font-bold text-white font-rajdhani"><?php echo esc_html( $selected_count ); ?></p>
+						</div>
+						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+							<p class="text-xs uppercase tracking-[0.16em] text-slate-500 font-semibold"><?php esc_html_e( 'Needed', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-3xl font-bold text-white font-rajdhani"><?php echo esc_html( $compare_min_selection ); ?></p>
+						</div>
+					</div>
+					<p class="mt-5 text-sm text-slate-300 leading-relaxed"><?php esc_html_e( 'The shortlist now persists across the catalog and product detail pages, so you can keep adding machines without losing the current pick.', 'industrial-welding' ); ?></p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<?php endif; ?>
 <?php else : ?>
 	<section class="bg-slate-900 border-y border-slate-800">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">

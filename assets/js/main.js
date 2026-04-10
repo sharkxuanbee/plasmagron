@@ -69,19 +69,69 @@
 	}
 
 	function initCompareButtons() {
+		var compareConfig = getCompareConfig();
+		var compareIdsFromUrl = getCompareIdsFromUrl(compareConfig);
+		var storedCompareIds = getStoredCompareIds(compareConfig);
+
+		if (compareIdsFromUrl.length) {
+			setStoredCompareIds(compareIdsFromUrl, compareConfig);
+		} else if (isCurrentCompareBasePage(compareConfig) && storedCompareIds.length) {
+			window.location.replace(buildCompareUrl(storedCompareIds, compareConfig));
+			return;
+		}
+
 		var compareCheckboxes = document.querySelectorAll('.compare-checkbox');
 		if (compareCheckboxes.length > 0) {
-			updateCompareButton();
+			syncCompareUI(compareConfig);
 
 			compareCheckboxes.forEach(function(checkbox) {
 				checkbox.addEventListener('change', function() {
-					updateCompareButton();
+					updateCompareSelectionForCheckbox(checkbox, compareConfig);
 				});
 			});
 		}
 
+		document.querySelectorAll('.compare-shortlist-toggle').forEach(function(toggle) {
+			toggle.addEventListener('click', function(event) {
+				var productId = sanitizeCompareId(toggle.getAttribute('data-product-id'));
+				if (!productId) {
+					return;
+				}
+
+				var selectedIds = getCurrentCompareIds(compareConfig);
+
+				if (selectedIds.indexOf(productId) !== -1) {
+					toggle.setAttribute('href', buildCompareUrl(selectedIds, compareConfig));
+					return;
+				}
+
+				event.preventDefault();
+				selectedIds.push(productId);
+				setStoredCompareIds(selectedIds, compareConfig);
+				syncCompareUI(compareConfig);
+			});
+		});
+
+		document.querySelectorAll('.compare-remove-button').forEach(function(removeButton) {
+			removeButton.addEventListener('click', function(event) {
+				var productId = sanitizeCompareId(removeButton.getAttribute('data-product-id'));
+				if (!productId) {
+					return;
+				}
+
+				event.preventDefault();
+				var nextIds = getCurrentCompareIds(compareConfig).filter(function(currentId) {
+					return currentId !== productId;
+				});
+
+				setStoredCompareIds(nextIds, compareConfig);
+				window.location.href = buildCompareUrl(nextIds, compareConfig);
+			});
+		});
+
 		var compareButton = document.getElementById('compare-selected-button');
 		if (!compareButton) {
+			syncCompareUI(compareConfig);
 			return;
 		}
 
@@ -90,19 +140,16 @@
 				return;
 			}
 
-			var selectedIds = getSelectedCompareIds();
+			var selectedIds = getCurrentCompareIds(compareConfig);
 
-			if (!selectedIds.length) {
+			if (selectedIds.length < compareConfig.minSelection) {
 				return;
 			}
 
-			var compareConfig = window.industrialWelding || {};
-			var compareUrl = compareButton.getAttribute('data-base-url') || compareConfig.compareUrl || '/compare/';
-			var compareQueryKey = compareConfig.compareQueryKey || 'products';
-			var separator = compareUrl.indexOf('?') === -1 ? '?' : '&';
-
-			window.location.href = compareUrl + separator + compareQueryKey + '=' + selectedIds.join(',');
+			window.location.href = buildCompareUrl(selectedIds, compareConfig);
 		});
+
+		syncCompareUI(compareConfig);
 	}
 
 	function initFinder() {
@@ -215,21 +262,21 @@
 		return steps.length ? steps.length - 1 : 0;
 	}
 
-	function updateCompareButton() {
-		var checkedItems = getSelectedCompareIds();
+	function updateCompareButton(compareIds, compareConfig) {
 		var compareButton = document.getElementById('compare-selected-button');
 
 		if (!compareButton) {
 			return;
 		}
 
-		var compareConfig = window.industrialWelding || {};
-		var minSelection = compareConfig.compareMinSelect || 2;
+		var checkedItems = Array.isArray(compareIds) ? compareIds : [];
+		var minSelection = compareConfig.minSelection;
 		var baseLabel = compareButton.getAttribute('data-label') || 'Compare Selected';
 		var remaining = minSelection - checkedItems.length;
 
 		if (checkedItems.length === 0) {
 			compareButton.textContent = baseLabel;
+			compareButton.title = '';
 		} else if (checkedItems.length < minSelection) {
 			compareButton.textContent = baseLabel + ' (' + checkedItems.length + '/' + minSelection + ')';
 			compareButton.title = 'Select ' + remaining + ' more machine' + (remaining > 1 ? 's' : '') + ' to compare';
@@ -247,14 +294,176 @@
 		}
 	}
 
-	function getSelectedCompareIds() {
-		var selectedIds = [];
+	function updateCompareSelectionForCheckbox(checkbox, compareConfig) {
+		var productId = sanitizeCompareId(checkbox.value);
+		if (!productId) {
+			return;
+		}
 
-		document.querySelectorAll('.compare-checkbox:checked').forEach(function(checkbox) {
-			selectedIds.push(checkbox.value);
+		var selectedIds = getCurrentCompareIds(compareConfig);
+		var currentIndex = selectedIds.indexOf(productId);
+
+		if (checkbox.checked && currentIndex === -1) {
+			selectedIds.push(productId);
+		}
+
+		if (!checkbox.checked && currentIndex !== -1) {
+			selectedIds.splice(currentIndex, 1);
+		}
+
+		setStoredCompareIds(selectedIds, compareConfig);
+		syncCompareUI(compareConfig);
+	}
+
+	function syncCompareUI(compareConfig) {
+		var selectedIds = getCurrentCompareIds(compareConfig);
+		syncCompareCheckboxes(selectedIds);
+		syncShortlistButtons(selectedIds, compareConfig);
+		updateCompareButton(selectedIds, compareConfig);
+	}
+
+	function syncCompareCheckboxes(selectedIds) {
+		document.querySelectorAll('.compare-checkbox').forEach(function(checkbox) {
+			var productId = sanitizeCompareId(checkbox.value);
+			checkbox.checked = !!productId && selectedIds.indexOf(productId) !== -1;
+		});
+	}
+
+	function syncShortlistButtons(selectedIds, compareConfig) {
+		document.querySelectorAll('.compare-shortlist-toggle').forEach(function(toggle) {
+			var productId = sanitizeCompareId(toggle.getAttribute('data-product-id'));
+			var addLabel = toggle.getAttribute('data-label-add') || 'Add To Shortlist';
+			var selectedLabel = toggle.getAttribute('data-label-selected') || 'Shortlisted';
+			var fallbackHref = toggle.getAttribute('data-fallback-href') || compareConfig.compareUrl;
+			var isSelected = !!productId && selectedIds.indexOf(productId) !== -1;
+
+			toggle.textContent = isSelected ? selectedLabel : addLabel;
+			toggle.setAttribute('href', isSelected ? buildCompareUrl(selectedIds, compareConfig) : fallbackHref);
+			toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+			toggle.setAttribute('title', isSelected ? 'This machine is already in the compare shortlist.' : 'Add this machine to the compare shortlist.');
+			toggle.classList.toggle('ring-2', isSelected);
+			toggle.classList.toggle('ring-amber-300', isSelected);
+		});
+	}
+
+	function getCompareConfig() {
+		var compareConfig = window.industrialWelding || {};
+
+		return {
+			compareUrl: compareConfig.compareUrl || '/compare/',
+			compareQueryKey: compareConfig.compareQueryKey || 'products',
+			minSelection: compareConfig.compareMinSelect || 2,
+			storageKey: compareConfig.compareStorageKey || 'industrial_welding_compare_shortlist'
+		};
+	}
+
+	function getCurrentCompareIds(compareConfig) {
+		var storedIds = getStoredCompareIds(compareConfig);
+		if (storedIds.length) {
+			return storedIds;
+		}
+
+		return getCompareIdsFromUrl(compareConfig);
+	}
+
+	function getCompareIdsFromUrl(compareConfig) {
+		try {
+			var currentUrl = new URL(window.location.href);
+			var rawValue = currentUrl.searchParams.get(compareConfig.compareQueryKey) || currentUrl.searchParams.get('machines') || '';
+			return sanitizeCompareIds(rawValue.split(','));
+		} catch (error) {
+			return [];
+		}
+	}
+
+	function getStoredCompareIds(compareConfig) {
+		if (!window.localStorage) {
+			return [];
+		}
+
+		try {
+			var rawValue = window.localStorage.getItem(compareConfig.storageKey);
+			if (!rawValue) {
+				return [];
+			}
+
+			var parsedValue = JSON.parse(rawValue);
+			return sanitizeCompareIds(Array.isArray(parsedValue) ? parsedValue : []);
+		} catch (error) {
+			return [];
+		}
+	}
+
+	function setStoredCompareIds(compareIds, compareConfig) {
+		if (!window.localStorage) {
+			return;
+		}
+
+		var sanitizedIds = sanitizeCompareIds(compareIds);
+
+		try {
+			if (!sanitizedIds.length) {
+				window.localStorage.removeItem(compareConfig.storageKey);
+				return;
+			}
+
+			window.localStorage.setItem(compareConfig.storageKey, JSON.stringify(sanitizedIds));
+		} catch (error) {
+			// Ignore storage write failures and keep the non-persistent fallback behavior.
+		}
+	}
+
+	function sanitizeCompareIds(compareIds) {
+		var sanitizedIds = [];
+
+		(compareIds || []).forEach(function(compareId) {
+			var sanitizedId = sanitizeCompareId(compareId);
+
+			if (!sanitizedId || sanitizedIds.indexOf(sanitizedId) !== -1) {
+				return;
+			}
+
+			sanitizedIds.push(sanitizedId);
 		});
 
-		return selectedIds;
+		return sanitizedIds;
+	}
+
+	function sanitizeCompareId(compareId) {
+		var normalizedId = String(compareId || '').replace(/[^\d]/g, '');
+
+		if (!normalizedId) {
+			return '';
+		}
+
+		return parseInt(normalizedId, 10) > 0 ? normalizedId : '';
+	}
+
+	function buildCompareUrl(compareIds, compareConfig) {
+		try {
+			var compareUrl = new URL(compareConfig.compareUrl, window.location.origin);
+			compareUrl.searchParams.delete(compareConfig.compareQueryKey);
+			compareUrl.searchParams.delete('machines');
+
+			if (compareIds.length) {
+				compareUrl.searchParams.set(compareConfig.compareQueryKey, sanitizeCompareIds(compareIds).join(','));
+			}
+
+			return compareUrl.toString();
+		} catch (error) {
+			return compareConfig.compareUrl;
+		}
+	}
+
+	function isCurrentCompareBasePage(compareConfig) {
+		try {
+			var currentUrl = new URL(window.location.href);
+			var compareUrl = new URL(compareConfig.compareUrl, window.location.origin);
+
+			return currentUrl.pathname === compareUrl.pathname && !getCompareIdsFromUrl(compareConfig).length;
+		} catch (error) {
+			return false;
+		}
 	}
 
 	window.addEventListener('load', function() {
