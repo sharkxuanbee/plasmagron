@@ -197,12 +197,12 @@ if ( empty( $use_case_entries ) ) {
 	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 xl:py-24">
 		<div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] gap-8 xl:gap-10 items-start">
 			<div class="max-w-4xl">
-				<p class="text-xs uppercase tracking-[0.34em] text-amber-300 font-semibold mb-5"><?php esc_html_e( 'Industrial Conversion Homepage', 'industrial-welding' ); ?></p>
+				<p class="text-xs uppercase tracking-[0.34em] text-amber-300 font-semibold mb-5"><?php esc_html_e( 'About Plasmargon', 'industrial-welding' ); ?></p>
 				<h1 class="text-4xl md:text-5xl xl:text-7xl font-bold text-white font-rajdhani leading-none">
-					<?php esc_html_e( 'From machine discovery to decision, without broken steps', 'industrial-welding' ); ?>
+					<?php esc_html_e( 'Reliable welding and plasma cutting equipment for real-world metalworking', 'industrial-welding' ); ?>
 				</h1>
 				<p class="mt-6 max-w-3xl text-lg md:text-xl text-slate-300 leading-relaxed">
-					<?php esc_html_e( 'Start with Finder, a category landing, or the full catalog. Each path leads into the same shortlist, compare, detail, quote, and checkout chain.', 'industrial-welding' ); ?>
+					<?php echo esc_html( industrial_welding_get_brand_intro() ); ?>
 				</p>
 
 				<div class="mt-8 flex flex-col sm:flex-row gap-3">

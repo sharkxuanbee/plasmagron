@@ -1,20 +1,30 @@
-=== plasmagron ===
+=== Industrial Welding ===
 
-Contributors: automattic
-Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready
+Contributors: plasmargon
+Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready, woocommerce, e-commerce
 
-Requires at least: 4.5
-Tested up to: 5.4
-Requires PHP: 5.6
-Stable tag: 1.0.0
+Requires at least: 6.4
+Tested up to: 6.9
+Requires PHP: 8.0
+Stable tag: 2.2.1
 License: GNU General Public License v2 or later
 License URI: LICENSE
 
-A starter theme called plasmagron.
+An industrial WooCommerce theme for overseas welding machine catalogs and quote-first conversion flows.
 
 == Description ==
 
-Description
+Industrial Welding is built for overseas welding and cutting equipment sales sites.
+
+The theme combines:
+
+* WooCommerce-powered machine catalog and product pages
+* Finder-guided shortlist creation
+* Compare workflow with persistent shortlist behavior
+* Quote-first contact path for B2B sales teams
+* Local Tailwind and local font delivery without runtime CDN dependencies
+
+The design system is intentionally dark, industrial, and conversion-oriented, with a consistent route from discovery to shortlist, compare, and contact.
 
 == Installation ==
 
@@ -26,14 +36,23 @@ Description
 
 = Does this theme support any plugins? =
 
-plasmagron includes support for WooCommerce and for Infinite Scroll in Jetpack.
+WooCommerce is recommended and powers the catalog, archive, and product detail flows used by the theme.
+
+= Does the theme depend on external frontend CDNs? =
+
+No. The production theme ships local CSS and local fonts, so the main catalog flow remains styled even when third-party CDNs are unavailable.
+
+= What buyer journey is this theme designed for? =
+
+The theme is optimized for overseas B2B welding machine sales: browse or use Finder, build a shortlist, compare decision-critical specs, then request a quote or continue to purchase.
 
 == Changelog ==
 
-= 1.0 - May 12 2015 =
-* Initial release
+= 2.2.1 =
+* Localized frontend assets now ship from the theme instead of external CDNs.
+* Unified release metadata, text domain, packaging, and coding-standard configuration under the industrial-welding identifier.
+* Cleaned legacy starter-theme naming from the active toolchain and documentation.
 
 == Credits ==
 
-* Based on Underscores https://underscores.me/, (C) 2012-2020 Automattic, Inc., [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)
 * normalize.css https://necolas.github.io/normalize.css/, (C) 2012-2018 Nicolas Gallagher and Jonathan Neal, [MIT](https://opensource.org/licenses/MIT)
