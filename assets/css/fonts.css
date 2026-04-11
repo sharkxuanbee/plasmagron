@@ -1,0 +1,76 @@
+@font-face {
+	font-family: 'Rajdhani';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src:
+		local('Rajdhani Regular'),
+		local('Rajdhani-Regular'),
+		url('../fonts/rajdhani-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Rajdhani';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src:
+		local('Rajdhani Medium'),
+		local('Rajdhani-Medium'),
+		url('../fonts/rajdhani-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Rajdhani';
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+	src:
+		local('Rajdhani SemiBold'),
+		local('Rajdhani-SemiBold'),
+		url('../fonts/rajdhani-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Rajdhani';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src:
+		local('Rajdhani Bold'),
+		local('Rajdhani-Bold'),
+		url('../fonts/rajdhani-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src:
+		local('Roboto Regular'),
+		local('Roboto-Regular'),
+		url('../fonts/roboto-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src:
+		local('Roboto Medium'),
+		local('Roboto-Medium'),
+		url('../fonts/roboto-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src:
+		local('Roboto Bold'),
+		local('Roboto-Bold'),
+		url('../fonts/roboto-latin-700-normal.woff2') format('woff2');
+}

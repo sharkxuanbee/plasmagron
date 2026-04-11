@@ -3,7 +3,7 @@
  * Industrial Welding Theme Functions
  *
  * @package Industrial_Welding
- * @version 2.2.0
+ * @version 2.2.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -45,8 +45,8 @@ function industrial_welding_normalize_site_url( $url ) {
 
 	$normalized = preg_replace(
 		array(
-			'#^(https?:)?//(?:www\.)?plasmagron\.com(?=[/:?#]|$)#i',
-			'#^(https?:)?//www\.plasmargon\.com(?=[/:?#]|$)#i',
+			'#^(https?:)?//(?:www\.)?plasmagron\.com(?=[/:?\#]|$)#i',
+			'#^(https?:)?//www\.plasmargon\.com(?=[/:?\#]|$)#i',
 		),
 		array(
 			'$1//plasmargon.com',
@@ -450,6 +450,24 @@ function industrial_welding_get_machine_label( $plural = false ) {
 }
 
 /**
+ * Get the public-facing brand name.
+ *
+ * @return string
+ */
+function industrial_welding_get_brand_name() {
+	return 'Plasmargon';
+}
+
+/**
+ * Get the shared short brand introduction.
+ *
+ * @return string
+ */
+function industrial_welding_get_brand_intro() {
+	return 'Plasmargon is a professional welding and plasma cutting equipment brand focused on delivering reliable, high-performance solutions for metalworking applications worldwide. Built around modern inverter technology and precision control systems, our equipment supports professionals and advanced DIY users with stable performance, multi-process flexibility, and practical usability.';
+}
+
+/**
  * Get the shared request quote label.
  *
  * @return string
@@ -464,7 +482,7 @@ function industrial_welding_get_request_quote_label() {
  * @return string
  */
 function industrial_welding_get_contact_phone_label() {
-	return '1-800-555-1234';
+	return '+1 (312) 330-0886';
 }
 
 /**
@@ -473,7 +491,7 @@ function industrial_welding_get_contact_phone_label() {
  * @return string
  */
 function industrial_welding_get_contact_phone_href() {
-	return 'tel:+18005551234';
+	return 'tel:+13123300886';
 }
 
 /**
@@ -482,7 +500,7 @@ function industrial_welding_get_contact_phone_href() {
  * @return string
  */
 function industrial_welding_get_contact_email() {
-	return 'sales@plasmargon.com';
+	return 'tonsen1682025@163.com';
 }
 
 /**
@@ -1611,21 +1629,51 @@ function industrial_welding_get_finder_recommendations( $answers, $limit = 3 ) {
 }
 
 /**
+ * Get a cache-busting asset version from the theme file mtime.
+ *
+ * @param string $relative_path Theme-relative asset path beginning with a slash.
+ * @return string
+ */
+function industrial_welding_get_asset_version( $relative_path ) {
+	$asset_path = get_theme_file_path( $relative_path );
+
+	if ( file_exists( $asset_path ) ) {
+		return (string) filemtime( $asset_path );
+	}
+
+	return wp_get_theme()->get( 'Version' );
+}
+
+/**
  * Enqueue scripts and styles.
  */
 function industrial_welding_scripts() {
 	wp_enqueue_style(
+		'industrial-welding-fonts',
+		get_theme_file_uri( '/assets/css/fonts.css' ),
+		array(),
+		industrial_welding_get_asset_version( '/assets/css/fonts.css' )
+	);
+
+	wp_enqueue_style(
+		'industrial-welding-tailwind',
+		get_theme_file_uri( '/assets/css/tailwind.css' ),
+		array( 'industrial-welding-fonts' ),
+		industrial_welding_get_asset_version( '/assets/css/tailwind.css' )
+	);
+
+	wp_enqueue_style(
 		'industrial-welding-style',
 		get_stylesheet_uri(),
-		array(),
-		wp_get_theme()->get( 'Version' )
+		array( 'industrial-welding-tailwind' ),
+		industrial_welding_get_asset_version( '/style.css' )
 	);
 
 	wp_enqueue_script(
 		'industrial-welding-scripts',
 		get_template_directory_uri() . '/assets/js/main.js',
 		array(),
-		wp_get_theme()->get( 'Version' ),
+		industrial_welding_get_asset_version( '/assets/js/main.js' ),
 		true
 	);
 
@@ -1646,46 +1694,11 @@ function industrial_welding_scripts() {
 add_action( 'wp_enqueue_scripts', 'industrial_welding_scripts' );
 
 /**
- * Add Tailwind CSS CDN script to head.
- */
-function industrial_welding_tailwind_cdn() {
-	?>
-	<script src="https://cdn.tailwindcss.com"></script>
-	<script>
-	tailwind.config = {
-		theme: {
-			extend: {
-				fontFamily: {
-					rajdhani: ['Rajdhani', 'sans-serif'],
-					roboto: ['Roboto', 'sans-serif'],
-				},
-				colors: {
-					gray: {
-						50:  '#f9fafb',
-						100: '#f3f4f6',
-						200: '#e5e7eb',
-						300: '#d1d5db',
-						400: '#9ca3af',
-						500: '#6b7280',
-						600: '#4b5563',
-						700: '#374151',
-						800: '#1f2937',
-						900: '#111827',
-						950: '#030712',
-					},
-				},
-			},
-		},
-	}
-	</script>
-	<?php
-}
-add_action( 'wp_head', 'industrial_welding_tailwind_cdn', 1 );
-
-/**
  * Theme setup.
  */
 function industrial_welding_setup() {
+	load_theme_textdomain( 'industrial-welding', get_template_directory() . '/languages' );
+
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'custom-logo' );

@@ -46,11 +46,12 @@ $decision_navigation     = array(
 			<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.63fr))] gap-10">
 				<div class="max-w-md">
 					<div class="flex items-center gap-3 mb-6">
-						<span class="text-2xl font-bold text-amber-300 font-rajdhani tracking-[0.18em]">PLASMA</span>
-						<span class="text-2xl font-bold text-white font-rajdhani tracking-[0.18em]">GRON</span>
+						<span class="inline-flex items-center text-2xl font-bold font-rajdhani uppercase tracking-[0.18em] leading-none" aria-label="<?php echo esc_attr( industrial_welding_get_brand_name() ); ?>">
+							<span class="text-amber-300">PLASMA</span><span class="text-white">RGON</span>
+						</span>
 					</div>
 					<p class="text-slate-300 leading-relaxed mb-6">
-						<?php esc_html_e( 'A conversion-focused industrial machine theme built around one clear route: use Finder or category landings, narrow the shortlist, compare the tradeoffs, then quote or buy with confidence.', 'industrial-welding' ); ?>
+						<?php echo esc_html( industrial_welding_get_brand_intro() ); ?>
 					</p>
 					<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
 						<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
@@ -160,7 +161,7 @@ $decision_navigation     = array(
 
 			<div class="mt-12 border-t border-slate-800 pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 				<p class="text-sm text-slate-500">
-					&copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>. <?php esc_html_e( 'All rights reserved.', 'industrial-welding' ); ?>
+					&copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( industrial_welding_get_brand_name() ); ?>. <?php esc_html_e( 'All rights reserved.', 'industrial-welding' ); ?>
 				</p>
 				<div class="flex flex-wrap gap-5 text-sm text-slate-500">
 					<a href="<?php echo esc_url( $contact_url ); ?>" class="transition hover:text-slate-300"><?php esc_html_e( 'Privacy', 'industrial-welding' ); ?></a>

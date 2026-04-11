@@ -18,9 +18,6 @@ $finder_url       = industrial_welding_get_finder_page_url();
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 	<?php wp_head(); ?>
 </head>
 
@@ -58,9 +55,8 @@ $finder_url       = industrial_welding_get_finder_page_url();
 					<?php if ( has_custom_logo() ) : ?>
 						<?php the_custom_logo(); ?>
 					<?php else : ?>
-						<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center gap-3">
-							<span class="text-3xl font-bold text-amber-300 font-rajdhani tracking-[0.18em]">PLASMA</span>
-							<span class="text-3xl font-bold text-white font-rajdhani tracking-[0.18em]">GRON</span>
+						<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="inline-flex items-center text-3xl font-bold font-rajdhani uppercase tracking-[0.18em] leading-none" aria-label="<?php echo esc_attr( industrial_welding_get_brand_name() ); ?>">
+							<span class="text-amber-300">PLASMA</span><span class="text-white">RGON</span>
 						</a>
 					<?php endif; ?>
 				</div>

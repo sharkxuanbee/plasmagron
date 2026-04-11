@@ -1,0 +1,1815 @@
+# Copyright (C) 2026 Industrial Welding 2.2.1
+# This file is distributed under the same license as the Industrial Welding 2.2.1 package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Industrial Welding 2.2.1\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-11 01:44+0000\n"
+"Report-Msgid-Bugs-To: https://plasmargon.com/\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: 404.php:25
+msgid "404"
+msgstr ""
+
+#: 404.php:26
+msgid "That route does not exist in the current site structure"
+msgstr ""
+
+#: 404.php:27
+msgid "Use the catalog, Finder, or the contact path below to get back into a working decision flow."
+msgstr ""
+
+#: 404.php:30, archive.php:34, footer.php:60, front-page.php:177, front-page.php:213, header.php:39, home.php:36, home.php:147, index.php:39, page-blog.php:44, page-blog.php:163, page-compare.php:368, page-contact.php:111, page-finder.php:82, page-finder.php:364, page.php:42, search.php:50, template-parts/content-none.php:66
+msgid "Browse Machines"
+msgstr ""
+
+#: 404.php:33, archive-product.php:89, archive-product.php:277, archive.php:37, footer.php:57, front-page.php:426, header.php:98, header.php:144, home.php:39, index.php:42, page-blog.php:47, page-compare.php:88, page-compare.php:371, page-compare.php:298, page-contact.php:105, search.php:53, template-parts/content-none.php:69
+msgid "Open Finder"
+msgstr ""
+
+#: 404.php:46
+msgid "Search Instead"
+msgstr ""
+
+#: 404.php:47
+msgid "Search the current site content"
+msgstr ""
+
+#: archive-product.php:43
+msgid "Machine Catalog"
+msgstr ""
+
+#: archive-product.php:45
+msgid "Use category pages, reusable filters, and Finder to turn a wide catalog into a smaller and more credible shortlist."
+msgstr ""
+
+#. translators: %s: filter taxonomy label
+#: archive-product.php:58
+msgid "%s Landing"
+msgstr ""
+
+#: archive-product.php:51
+msgid "Category Landing"
+msgstr ""
+
+#: archive-product.php:54
+msgid "This category page is the stable landing spot for buyers who already know the machine type they want to explore."
+msgstr ""
+
+#: archive-product.php:86
+msgid "Browse All Machines"
+msgstr ""
+
+#: archive-product.php:95
+msgid "Selection Status"
+msgstr ""
+
+#: archive-product.php:98
+msgid "Published"
+msgstr ""
+
+#: archive-product.php:102
+msgid "Visible Now"
+msgstr ""
+
+#: archive-product.php:106
+msgid "Active Filters"
+msgstr ""
+
+#: archive-product.php:110
+msgid "Ready Profiles"
+msgstr ""
+
+#: archive-product.php:114
+msgid "Category pages, filters, and Finder all read the same usage, skill, budget, category, and core spec structure, so the selection logic stays consistent."
+msgstr ""
+
+#: archive-product.php:125
+msgid "Filter System"
+msgstr ""
+
+#: archive-product.php:126
+msgid "Narrow the catalog without losing the compare flow"
+msgstr ""
+
+#: archive-product.php:127
+msgid "Filters use shareable URLs and stay additive to category landings. If the shortlist still feels unclear, switch to Finder instead of guessing."
+msgstr ""
+
+#: archive-product.php:131, archive-product.php:318
+msgid "Clear Extra Filters"
+msgstr ""
+
+#: archive-product.php:134
+msgid "Use Finder Instead"
+msgstr ""
+
+#: archive-product.php:142
+msgid "Product Categories"
+msgstr ""
+
+#: archive-product.php:143
+msgid "Stable landing pages for machine types"
+msgstr ""
+
+#: archive-product.php:147
+msgid "All Machines"
+msgstr ""
+
+#: archive-product.php:183, functions.php:1746
+msgid "All %s"
+msgstr ""
+
+#. translators: %d: number of visible products
+#: archive-product.php:246
+msgid "%d machine matches the current selection"
+msgid_plural "%d machines match the current selection"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive-product.php:314
+msgid "No machines match the current path"
+msgstr ""
+
+#: archive-product.php:315
+msgid "The current category and filter combination is too narrow. Clear the extra filters or use Finder so the system can recommend the closest machines instead of leaving you in a dead end."
+msgstr ""
+
+#: archive-product.php:321, page-compare.php:331
+msgid "Use Finder"
+msgstr ""
+
+#: archive-product.php:262
+msgid "Decision-Ready Cards"
+msgstr ""
+
+#: archive-product.php:263
+msgid "Keep narrowing until the shortlist is ready for detail or compare"
+msgstr ""
+
+#: archive-product.php:269, archive-product.php:274
+msgid "Compare Selected"
+msgstr ""
+
+#: archive-product.php:296, archive.php:68, home.php:119, index.php:73, page-blog.php:135, page-finder.php:203, search.php:84
+msgid "Previous"
+msgstr ""
+
+#: archive-product.php:300, archive.php:69, home.php:120, index.php:74, page-blog.php:136, search.php:85
+msgid "Next"
+msgstr ""
+
+#: archive-product.php:302, archive.php:75, home.php:126, index.php:80, page-blog.php:142, search.php:91
+msgid "Pagination"
+msgstr ""
+
+#: archive.php:27
+msgid "Archive"
+msgstr ""
+
+#: archive.php:43, index.php:48, search.php:59
+msgid "Fallback Coverage"
+msgstr ""
+
+#: archive.php:44
+msgid "Category, date, author, and generic archives now share the same industrial archive shell instead of falling into the legacy starter-theme layout."
+msgstr ""
+
+#. translators: 1: comment count number, 2: title.
+#: comments.php:40
+msgctxt "comments title"
+msgid "%1$s comment on \"%2$s\""
+msgid_plural "%1$s comments on \"%2$s\""
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:34
+msgid "One comment on \"%1$s\""
+msgstr ""
+
+#: comments.php:72
+msgid "Comments are closed."
+msgstr ""
+
+#: content-product.php:30
+msgid "Add To Shortlist"
+msgstr ""
+
+#: content-product.php:31
+msgid "Shortlisted"
+msgstr ""
+
+#: content-product.php:84
+msgid "Decision Note"
+msgstr ""
+
+#: content-product.php:86
+msgid "Open the detail page for the full conversion path, downloads, trust notes, and quote or purchase action."
+msgstr ""
+
+#: content-product.php:93
+msgid "Add to compare shortlist"
+msgstr ""
+
+#: content-product.php:104, front-page.php:265, front-page.php:335, page-compare.php:174, page-compare.php:264, page-finder.php:329
+msgid "View Machine"
+msgstr ""
+
+#: footer.php:20, functions.php:2118, page-finder.php:3, page-finder.php:71
+msgid "Welder Finder"
+msgstr ""
+
+#: footer.php:24
+msgid "Catalog Overview"
+msgstr ""
+
+#: footer.php:28
+msgid "Compare Shortlist"
+msgstr ""
+
+#: footer.php:32
+msgid "Filterable Category Paths"
+msgstr ""
+
+#: footer.php:36
+msgid "Documentation Or Bulk Quote"
+msgstr ""
+
+#: footer.php:53
+msgid "A conversion-focused industrial machine theme built around one clear route: use Finder or category landings, narrow the shortlist, compare the tradeoffs, then quote or buy with confidence."
+msgstr ""
+
+#: footer.php:69
+msgid "Explore"
+msgstr ""
+
+#: footer.php:97
+msgid "Decision Paths"
+msgstr ""
+
+#: footer.php:121, functions.php:525
+msgid "Contact"
+msgstr ""
+
+#: footer.php:124, page-contact.php:58, single-product.php:281
+msgid "Sales Line"
+msgstr ""
+
+#: footer.php:128, page-contact.php:64
+msgid "Email"
+msgstr ""
+
+#: footer.php:132
+msgid "Support Window"
+msgstr ""
+
+#: footer.php:133
+msgid "Quote, spec sheet, and after-sales questions handled through the same contact route."
+msgstr ""
+
+#: footer.php:163
+msgid "All rights reserved."
+msgstr ""
+
+#: footer.php:166
+msgid "Privacy"
+msgstr ""
+
+#: footer.php:167
+msgid "Terms"
+msgstr ""
+
+#: footer.php:168
+msgid "Support"
+msgstr ""
+
+#: front-page.php:65
+msgid "Open machine-type landings"
+msgstr ""
+
+#: front-page.php:66
+msgid "Use category pages when the buyer already knows the machine family and only needs a cleaner starting point than the full catalog."
+msgstr ""
+
+#: front-page.php:67
+msgid "Browse Categories"
+msgstr ""
+
+#. translators: %s: product category name
+#: front-page.php:76
+msgid "Start with %s"
+msgstr ""
+
+#: front-page.php:79
+msgid "Send buyers straight into a machine-type landing page, then let filters and compare refine the shortlist from there."
+msgstr ""
+
+#. translators: %s: product category name
+#: front-page.php:82
+msgid "Open %s"
+msgstr ""
+
+#: front-page.php:90, functions.php:522, header.php:37
+msgid "Finder"
+msgstr ""
+
+#: front-page.php:91
+msgid "Use guided selection first"
+msgstr ""
+
+#: front-page.php:92
+msgid "Start with Finder when the buyer knows the job requirements but does not know which machine should make the shortlist yet."
+msgstr ""
+
+#: front-page.php:94, front-page.php:210, index.php:107, page-finder.php:79
+msgid "Start Finder"
+msgstr ""
+
+#: front-page.php:97
+msgid "Category"
+msgstr ""
+
+#: front-page.php:104
+msgid "Catalog"
+msgstr ""
+
+#: front-page.php:105
+msgid "Browse all machines"
+msgstr ""
+
+#: front-page.php:106
+msgid "Open the full product list when the buyer needs a wide view of the lineup before applying filters or compare."
+msgstr ""
+
+#: front-page.php:108
+msgid "Open Catalog"
+msgstr ""
+
+#: front-page.php:111, functions.php:523, single-product.php:517
+msgid "Compare"
+msgstr ""
+
+#: front-page.php:112
+msgid "Build a shortlist"
+msgstr ""
+
+#: front-page.php:113
+msgid "Use compare when the buyer already has a few candidate machines and wants the differences laid out clearly."
+msgstr ""
+
+#: front-page.php:115
+msgid "Go To Compare"
+msgstr ""
+
+#: front-page.php:122
+msgid "Choose Finder or a category landing"
+msgstr ""
+
+#: front-page.php:123
+msgid "Finder is for requirement-led buyers. Category landings are for buyers who already know the machine family and need a faster entry point."
+msgstr ""
+
+#: front-page.php:127
+msgid "Use filters and compare to tighten the shortlist"
+msgstr ""
+
+#: front-page.php:128
+msgid "Usage, skill, budget, amperage, power input, and duty cycle should narrow the field before anyone asks for a quote."
+msgstr ""
+
+#: front-page.php:132
+msgid "Move into detail, quote, or checkout only after confidence is high"
+msgstr ""
+
+#: front-page.php:133
+msgid "The conversion step should happen after the shortlist is credible, not while the buyer is still guessing which machine fits."
+msgstr ""
+
+#: front-page.php:139
+msgid "Industrial-first detail pages"
+msgstr ""
+
+#: front-page.php:140
+msgid "Every featured machine can route buyers into specs, compare, quote, or checkout without dead ends."
+msgstr ""
+
+#: front-page.php:143
+msgid "Compare-ready catalog flow"
+msgstr ""
+
+#: front-page.php:144
+msgid "The listing experience is optimized for shortlist building first, not for hiding machines behind complex filters."
+msgstr ""
+
+#: front-page.php:147
+msgid "Support-backed conversion path"
+msgstr ""
+
+#: front-page.php:148
+msgid "Warranty, technical support, and documentation stay visible throughout the decision chain."
+msgstr ""
+
+#: front-page.php:164
+msgid "Open the matching machine options for this usage scenario."
+msgstr ""
+
+#: front-page.php:166
+msgid "Open Scenario"
+msgstr ""
+
+#: front-page.php:174
+msgid "Fabrication Shops"
+msgstr ""
+
+#: front-page.php:175
+msgid "Browse machines suited to repeatable shop throughput and easy comparison across output ranges."
+msgstr ""
+
+#: front-page.php:180
+msgid "Procurement Teams"
+msgstr ""
+
+#: front-page.php:181
+msgid "Jump into compare when internal approval depends on a clean side-by-side summary of the shortlist."
+msgstr ""
+
+#: front-page.php:183
+msgid "Compare Options"
+msgstr ""
+
+#: front-page.php:186
+msgid "Bulk Buyers"
+msgstr ""
+
+#: front-page.php:187
+msgid "Go directly to the quote path when pricing, availability, or documentation needs a tailored response."
+msgstr ""
+
+#: front-page.php:200
+msgid "Industrial Conversion Homepage"
+msgstr ""
+
+#: front-page.php:202
+msgid "From machine discovery to decision, without broken steps"
+msgstr ""
+
+#: front-page.php:205
+msgid "Start with Finder, a category landing, or the full catalog. Each path leads into the same shortlist, compare, detail, quote, and checkout chain."
+msgstr ""
+
+#: front-page.php:225
+msgid "Compare-ready catalog"
+msgstr ""
+
+#: front-page.php:226
+msgid "Quote or checkout path"
+msgstr ""
+
+#: front-page.php:227
+msgid "Support-first buying flow"
+msgstr ""
+
+#: front-page.php:234
+msgid "Core Route"
+msgstr ""
+
+#: front-page.php:238
+msgid "Choose Finder or a category"
+msgstr ""
+
+#: front-page.php:239
+msgid "Open the guided route when the fit is unclear, or start from a machine-type landing when the family is already known."
+msgstr ""
+
+#: front-page.php:243
+msgid "Filter and compare the shortlist"
+msgstr ""
+
+#: front-page.php:244
+msgid "Move into compare as soon as there are at least two realistic candidates and use filters to remove weak fits."
+msgstr ""
+
+#: front-page.php:248
+msgid "Convert from confidence"
+msgstr ""
+
+#: front-page.php:249
+msgid "Finish on the detail page where the machine can move to quote or purchase cleanly after the selection logic is already clear."
+msgstr ""
+
+#: front-page.php:261
+msgid "Featured Machine"
+msgstr ""
+
+#: front-page.php:279
+msgid "Quick Entry"
+msgstr ""
+
+#: front-page.php:280
+msgid "Choose the fastest entry point for the buyer stage"
+msgstr ""
+
+#: front-page.php:303
+msgid "Best Sellers"
+msgstr ""
+
+#: front-page.php:304
+msgid "Machines already positioned for conversion"
+msgstr ""
+
+#: front-page.php:307
+msgid "View Full Catalog"
+msgstr ""
+
+#: front-page.php:343
+msgid "Featured machines will appear here"
+msgstr ""
+
+#: front-page.php:344
+msgid "Once products are marked as featured, this section becomes the homepage shortcut into the strongest conversion candidates."
+msgstr ""
+
+#: front-page.php:354
+msgid "How To Choose"
+msgstr ""
+
+#: front-page.php:355
+msgid "A simple decision framework for industrial buyers"
+msgstr ""
+
+#: front-page.php:375
+msgid "Use Case Entry"
+msgstr ""
+
+#: front-page.php:376
+msgid "Route by buying context, not just by model name"
+msgstr ""
+
+#: front-page.php:397
+msgid "Trust Section"
+msgstr ""
+
+#: front-page.php:398
+msgid "The conversion chain is built to stay consistent page to page"
+msgstr ""
+
+#: front-page.php:417
+msgid "Strong CTA"
+msgstr ""
+
+#: front-page.php:418
+msgid "Need a faster route to the right machine?"
+msgstr ""
+
+#: front-page.php:419
+msgid "Send the sales team your application, power setup, and quantity target. They can point you to the right machines, send the documentation, and help finalize the shortlist."
+msgstr ""
+
+#: functions.php:448, functions.php:2098
+msgid "Machines"
+msgstr ""
+
+#: functions.php:449
+msgid "Machine"
+msgstr ""
+
+#: functions.php:458
+msgid "Request Quote"
+msgstr ""
+
+#: functions.php:512, single-product.php:137
+msgid "Home"
+msgstr ""
+
+#: functions.php:524, functions.php:2126, home.php:18, index.php:25, page-blog.php:17
+msgid "Blog"
+msgstr ""
+
+#: functions.php:561, functions.php:674, page-compare.php:229
+msgid "Input Voltage"
+msgstr ""
+
+#: functions.php:562
+msgid "Example: 220V / 380V 3-Phase"
+msgstr ""
+
+#: functions.php:570, functions.php:675, page-compare.php:223
+msgid "Amperage"
+msgstr ""
+
+#: functions.php:571
+msgid "Example: 200A"
+msgstr ""
+
+#: functions.php:579, functions.php:676, page-compare.php:235
+msgid "Duty Cycle"
+msgstr ""
+
+#: functions.php:580
+msgid "Example: 60% @ 200A"
+msgstr ""
+
+#: functions.php:588, functions.php:677, page-compare.php:241
+msgid "Weight"
+msgstr ""
+
+#: functions.php:589
+msgid "Example: 42 lbs"
+msgstr ""
+
+#: functions.php:598
+msgid "Homepage Featured Product"
+msgstr ""
+
+#: functions.php:599
+msgid "Show this product in homepage featured sections."
+msgstr ""
+
+#: functions.php:607
+msgid "Displayed Rating"
+msgstr ""
+
+#: functions.php:608
+msgid "Optional manual rating override, for example 4.8."
+msgstr ""
+
+#: functions.php:621
+msgid "Displayed Review Count"
+msgstr ""
+
+#: functions.php:622
+msgid "Optional manual review count override."
+msgstr ""
+
+#: functions.php:634, page-compare.php:247
+msgid "Best For"
+msgstr ""
+
+#: functions.php:635
+msgid "Short guidance explaining who this product is best for."
+msgstr ""
+
+#: functions.php:643
+msgid "Specification PDF URL"
+msgstr ""
+
+#: functions.php:644
+msgid "Direct URL to a PDF specification sheet."
+msgstr ""
+
+#: functions.php:652
+msgid "Demo Video URL"
+msgstr ""
+
+#: functions.php:653
+msgid "YouTube, Vimeo, or hosted video URL."
+msgstr ""
+
+#: functions.php:661
+msgid "Warranty Details"
+msgstr ""
+
+#: functions.php:662
+msgid "Short warranty summary shown on the product page."
+msgstr ""
+
+#: functions.php:803, functions.php:1726
+msgid "Usage Scene"
+msgstr ""
+
+#: functions.php:804
+msgid "Usage"
+msgstr ""
+
+#: functions.php:805
+msgid "What will you weld?"
+msgstr ""
+
+#: functions.php:806
+msgid "Choose the application or shop context closest to your work."
+msgstr ""
+
+#: functions.php:807
+msgid "Usage scene terms have not been added yet."
+msgstr ""
+
+#: functions.php:808
+msgid "Use this view to narrow the catalog by application before comparing models."
+msgstr ""
+
+#: functions.php:811, functions.php:1731
+msgid "Skill Level"
+msgstr ""
+
+#: functions.php:812
+msgid "Skill"
+msgstr ""
+
+#: functions.php:813
+msgid "Experience level?"
+msgstr ""
+
+#: functions.php:814
+msgid "Select the operator experience level the machine should suit."
+msgstr ""
+
+#: functions.php:815
+msgid "Skill level terms have not been added yet."
+msgstr ""
+
+#: functions.php:816
+msgid "Use this view when the operator skill level matters as much as the raw specifications."
+msgstr ""
+
+#: functions.php:819, functions.php:1736
+msgid "Budget Range"
+msgstr ""
+
+#: functions.php:820
+msgid "Budget"
+msgstr ""
+
+#: functions.php:821
+msgid "Budget?"
+msgstr ""
+
+#: functions.php:822
+msgid "Keep the shortlist grounded in a realistic spending range."
+msgstr ""
+
+#: functions.php:823
+msgid "Budget range terms have not been added yet."
+msgstr ""
+
+#: functions.php:824
+msgid "Use this view to keep the catalog aligned with the target spend before moving to detail or compare."
+msgstr ""
+
+#: functions.php:1261
+msgid "Usage scene coverage"
+msgstr ""
+
+#: functions.php:1262
+msgid "Skill level coverage"
+msgstr ""
+
+#: functions.php:1263
+msgid "Budget coverage"
+msgstr ""
+
+#: functions.php:1264
+msgid "Category coverage"
+msgstr ""
+
+#: functions.php:1265
+msgid "Core spec coverage"
+msgstr ""
+
+#: functions.php:1266
+msgid "Complete selection profile"
+msgstr ""
+
+#: functions.php:1290
+msgid "Thin Material"
+msgstr ""
+
+#: functions.php:1291
+msgid "Light-gauge work and lower amperage requirements."
+msgstr ""
+
+#: functions.php:1296
+msgid "Medium Thickness"
+msgstr ""
+
+#: functions.php:1297
+msgid "General fabrication jobs that need balanced output."
+msgstr ""
+
+#: functions.php:1302
+msgid "Heavy Section"
+msgstr ""
+
+#: functions.php:1303
+msgid "Higher-output work where sustained amperage matters."
+msgstr ""
+
+#. translators: %s: usage scene name
+#: functions.php:1468
+msgid "Matches the %s usage scene."
+msgstr ""
+
+#. translators: 1: thickness label, 2: amperage text
+#: functions.php:1484
+msgid "Amperage output fits the %1$s range (%2$s)."
+msgstr ""
+
+#. translators: %s: skill level term name
+#: functions.php:1499
+msgid "Aligned with the %s operator level."
+msgstr ""
+
+#. translators: %s: budget term name
+#: functions.php:1513
+msgid "Sits in the %s budget band."
+msgstr ""
+
+#: functions.php:1561
+msgid "No exact Finder match was available, so this featured machine is shown as a safe fallback."
+msgstr ""
+
+#: functions.php:1694, functions.php:2157
+msgid "Primary Menu"
+msgstr ""
+
+#: functions.php:1695
+msgid "Footer Menu"
+msgstr ""
+
+#: functions.php:1696
+msgid "Footer Secondary Menu"
+msgstr ""
+
+#: functions.php:1725
+msgid "Usage Scenes"
+msgstr ""
+
+#: functions.php:1730
+msgid "Skill Levels"
+msgstr ""
+
+#: functions.php:1735
+msgid "Budget Ranges"
+msgstr ""
+
+#: functions.php:1745
+msgid "Search %s"
+msgstr ""
+
+#: functions.php:1747
+msgid "Edit %s"
+msgstr ""
+
+#: functions.php:1748
+msgid "Update %s"
+msgstr ""
+
+#: functions.php:1749
+msgid "Add New %s"
+msgstr ""
+
+#: functions.php:1750
+msgid "New %s Name"
+msgstr ""
+
+#: functions.php:1799
+msgid "Footer Area One"
+msgstr ""
+
+#: functions.php:1801, functions.php:1813, functions.php:1825
+msgid "Add widgets here."
+msgstr ""
+
+#: functions.php:1811
+msgid "Footer Area Two"
+msgstr ""
+
+#: functions.php:1823
+msgid "Footer Area Three"
+msgstr ""
+
+#: functions.php:2122, page-compare.php:3, page-compare.php:78, page-contact.php:108, page-finder.php:367
+msgid "Compare Machines"
+msgstr ""
+
+#: functions.php:2130, page-contact.php:17
+msgid "Contact Us"
+msgstr ""
+
+#: header.php:29
+msgid "Skip to content"
+msgstr ""
+
+#: header.php:41
+msgid "Compare Shortlists"
+msgstr ""
+
+#: header.php:43
+msgid "Quote Or Checkout"
+msgstr ""
+
+#: header.php:103
+msgid "Open menu"
+msgstr ""
+
+#: header.php:149
+msgid "Sales Contact"
+msgstr ""
+
+#: home.php:19, page-blog.php:40
+msgid "Use this page for product updates, welding tips, buying guidance, and practical content that supports machine selection and procurement decisions."
+msgstr ""
+
+#: home.php:27, page-blog.php:35
+msgid "Insights & Updates"
+msgstr ""
+
+#: home.php:45, page-blog.php:53
+msgid "Content Focus"
+msgstr ""
+
+#: home.php:47, page-blog.php:55
+msgid "Machine comparisons and category guidance"
+msgstr ""
+
+#: home.php:48, page-blog.php:56
+msgid "Welding and cutting tips for buyers and operators"
+msgstr ""
+
+#: home.php:49, page-blog.php:57
+msgid "Documentation, maintenance, and purchase-readiness topics"
+msgstr ""
+
+#: home.php:142, page-blog.php:158
+msgid "No Posts Yet"
+msgstr ""
+
+#: home.php:143, page-blog.php:159
+msgid "The blog is ready for your first article"
+msgstr ""
+
+#: home.php:144, page-blog.php:160
+msgid "Publish your first post to turn this page into a useful resource hub for product guidance, welding knowledge, and buyer education."
+msgstr ""
+
+#: home.php:74, page-blog.php:90
+msgid "Blog Update"
+msgstr ""
+
+#: home.php:105, page-blog.php:121, template-parts/content.php:196
+msgid "Read Article"
+msgstr ""
+
+#: index.php:26
+msgid "Use this fallback post index when WordPress resolves to the generic template hierarchy. The route still stays inside the industrial article system."
+msgstr ""
+
+#: index.php:34
+msgid "Post Index Fallback"
+msgstr ""
+
+#: index.php:49
+msgid "This generic index template now works as a clean content fallback instead of exposing the old starter-theme layout when no more specific template wins."
+msgstr ""
+
+#: index.php:103
+msgid "Next Action"
+msgstr ""
+
+#: index.php:104
+msgid "Use product routes when the goal is machine selection"
+msgstr ""
+
+#: page-blog.php:3
+msgid "Blog Landing"
+msgstr ""
+
+#: page-compare.php:76
+msgid "Compare Decision Page"
+msgstr ""
+
+#: page-compare.php:81
+msgid "Turn a shortlist into a decision. Review the core differences side by side, then return to detail, quote, or checkout with less uncertainty."
+msgstr ""
+
+#: page-compare.php:85, page-compare.php:287
+msgid "Return To Catalog"
+msgstr ""
+
+#: page-compare.php:94
+msgid "Guided Reset"
+msgstr ""
+
+#: page-compare.php:95
+msgid "Not sure these are the right machines?"
+msgstr ""
+
+#: page-compare.php:96
+msgid "Compare works best when the shortlist is already plausible. If the current picks still feel uncertain, switch to Finder and rebuild the selection from application fit, thickness, skill, and budget."
+msgstr ""
+
+#: page-compare.php:99
+msgid "Refine With Finder"
+msgstr ""
+
+#: page-compare.php:363
+msgid "Empty State"
+msgstr ""
+
+#: page-compare.php:364
+msgid "No machines selected for compare yet"
+msgstr ""
+
+#: page-compare.php:365
+msgid "Return to the catalog, open the machines that look promising, and tick at least two products to unlock the full side-by-side decision view."
+msgstr ""
+
+#: page-compare.php:378
+msgid "Finder is the faster route when you are starting from application requirements instead of model names."
+msgstr ""
+
+#: page-compare.php:112
+msgid "Selected State"
+msgstr ""
+
+#: page-compare.php:113
+msgid "Shortlisted machines"
+msgstr ""
+
+#: page-compare.php:120
+msgid "%d machine selected"
+msgid_plural "%d machines selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: page-compare.php:158
+msgid "Remove"
+msgstr ""
+
+#: page-compare.php:313
+msgid "Shortlist Pending"
+msgstr ""
+
+#: page-compare.php:319
+msgid "Add %d more machine to unlock the side-by-side compare table"
+msgid_plural "Add %d more machines to unlock the side-by-side compare table"
+msgstr[0] ""
+msgstr[1] ""
+
+#: page-compare.php:325
+msgid "Single-machine entries now stay in shortlist mode. Keep this machine, return to the catalog, and add at least one more candidate before using the full compare view."
+msgstr ""
+
+#: page-compare.php:328, page-compare.php:196
+msgid "Add More Machines"
+msgstr ""
+
+#: page-compare.php:337
+msgid "Current State"
+msgstr ""
+
+#: page-compare.php:340
+msgid "Selected Now"
+msgstr ""
+
+#: page-compare.php:344
+msgid "Needed"
+msgstr ""
+
+#: page-compare.php:348
+msgid "The shortlist now persists across the catalog and product detail pages, so you can keep adding machines without losing the current pick."
+msgstr ""
+
+#: page-compare.php:192
+msgid "Side-By-Side View"
+msgstr ""
+
+#: page-compare.php:193
+msgid "Compare the buying-critical specs"
+msgstr ""
+
+#: page-compare.php:204
+msgid "Compare Point"
+msgstr ""
+
+#: page-compare.php:217
+msgid "Summary"
+msgstr ""
+
+#: page-compare.php:219
+msgid "Overview pending."
+msgstr ""
+
+#: page-compare.php:249
+msgid "Ask for a recommendation based on your application."
+msgstr ""
+
+#: page-compare.php:253
+msgid "Price"
+msgstr ""
+
+#: page-compare.php:255
+msgid "Quote on request"
+msgstr ""
+
+#: page-compare.php:259
+msgid "Next Step"
+msgstr ""
+
+#: page-compare.php:279
+msgid "Decision CTA"
+msgstr ""
+
+#: page-compare.php:280
+msgid "Use the shortlist to trigger the real next action"
+msgstr ""
+
+#: page-compare.php:281
+msgid "Once the tradeoffs are clear, either return to a machine detail page for the final purchase path or send a quote request with the shortlist already narrowed down."
+msgstr ""
+
+#: page-compare.php:284
+msgid "Quote This Shortlist"
+msgstr ""
+
+#: page-compare.php:293
+msgid "Finder Return Path"
+msgstr ""
+
+#: page-compare.php:294
+msgid "Use Finder when compare exposes a mismatch"
+msgstr ""
+
+#: page-compare.php:295
+msgid "If these machines are too different, too advanced, or too expensive, go back through Finder and let the recommendation logic rebuild the shortlist from the actual requirements."
+msgstr ""
+
+#: page-compare.php:301
+msgid "Back To Catalog Filters"
+msgstr ""
+
+#: page-contact.php:3
+msgid "Contact Landing"
+msgstr ""
+
+#: page-contact.php:25
+msgid "Sales & Support"
+msgstr ""
+
+#: page-contact.php:30
+msgid "Use this page for quote requests, specification questions, bulk-buying support, warranty follow-up, and pre-purchase guidance on the right machine for the job."
+msgstr ""
+
+#: page-contact.php:43
+msgid "Fastest Path"
+msgstr ""
+
+#: page-contact.php:45
+msgid "Need a machine suggestion first: open Finder."
+msgstr ""
+
+#: page-contact.php:46
+msgid "Already have candidates: use Compare before reaching out."
+msgstr ""
+
+#: page-contact.php:47
+msgid "Need pricing, specs, or support: call or email directly from this page."
+msgstr ""
+
+#: page-contact.php:60
+msgid "Best for urgent quote requests, product matching, and stock questions."
+msgstr ""
+
+#: page-contact.php:66
+msgid "Best for spec sheet requests, purchase lists, warranty records, and attachments."
+msgstr ""
+
+#: page-contact.php:70
+msgid "Support Scope"
+msgstr ""
+
+#: page-contact.php:71
+msgid "Pre & Post Sale"
+msgstr ""
+
+#: page-contact.php:72
+msgid "Coverage includes machine selection, documentation, setup questions, and after-sales guidance."
+msgstr ""
+
+#: page-contact.php:76
+msgid "Recommended Prep"
+msgstr ""
+
+#: page-contact.php:77
+msgid "Share Job Details"
+msgstr ""
+
+#: page-contact.php:78
+msgid "Include material type, thickness, voltage, process needs, and target quantity for faster advice."
+msgstr ""
+
+#: page-contact.php:88
+msgid "Before You Reach Out"
+msgstr ""
+
+#: page-contact.php:89
+msgid "Useful details to send with your inquiry"
+msgstr ""
+
+#: page-contact.php:91
+msgid "Which machine or product family you are considering."
+msgstr ""
+
+#: page-contact.php:92
+msgid "Material type and thickness for cutting or welding."
+msgstr ""
+
+#: page-contact.php:93
+msgid "Available input power, expected usage frequency, and quantity needed."
+msgstr ""
+
+#: page-contact.php:94
+msgid "Whether you need pricing only, technical matching, or after-sales support."
+msgstr ""
+
+#: page-contact.php:100
+msgid "Self-Serve First"
+msgstr ""
+
+#: page-contact.php:101
+msgid "Use the catalog tools before sending a request"
+msgstr ""
+
+#: page-contact.php:102
+msgid "If you are still narrowing options, use Finder or Compare first. That makes the conversation faster and gives support more context."
+msgstr ""
+
+#: page-contact.php:117
+msgid "Direct Contact"
+msgstr ""
+
+#: page-contact.php:119
+msgid "Reach out directly if you need formal pricing, documentation, or support for an existing machine order."
+msgstr ""
+
+#: page-finder.php:36
+msgid "Material Thickness"
+msgstr ""
+
+#: page-finder.php:37
+msgid "Material thickness?"
+msgstr ""
+
+#: page-finder.php:38
+msgid "Thickness is mapped against amperage ranges so the recommendation stays explainable."
+msgstr ""
+
+#: page-finder.php:69
+msgid "Selection Guidance"
+msgstr ""
+
+#: page-finder.php:74
+msgid "Answer four practical questions and the Finder will narrow the catalog to the machines that best fit the intended work, operator level, and budget."
+msgstr ""
+
+#: page-finder.php:88
+msgid "Coverage Check"
+msgstr ""
+
+#: page-finder.php:89
+msgid "Selection data is now part of the catalog"
+msgstr ""
+
+#: page-finder.php:90
+msgid "Finder and filters rely on usage scene, skill level, budget, category, and core spec coverage. These counters make the matching logic transparent."
+msgstr ""
+
+#. translators: 1: count, 2: total product count
+#: page-finder.php:107
+msgid "%1$s of %2$s machines"
+msgstr ""
+
+#: page-finder.php:126
+msgid "Finder Rules"
+msgstr ""
+
+#: page-finder.php:127
+msgid "Why the recommendation appears"
+msgstr ""
+
+#: page-finder.php:130
+msgid "Priority 1"
+msgstr ""
+
+#: page-finder.php:131
+msgid "Usage scene carries the highest weight, because it is the strongest signal for whether the machine belongs in the shortlist at all."
+msgstr ""
+
+#: page-finder.php:134
+msgid "Priority 2"
+msgstr ""
+
+#: page-finder.php:135
+msgid "Thickness is mapped to amperage ranges so the Finder can explain why a machine is fit for lighter, medium, or heavier work."
+msgstr ""
+
+#: page-finder.php:138
+msgid "Priority 3"
+msgstr ""
+
+#: page-finder.php:139
+msgid "Skill level and budget refine the shortlist. If there is no exact match, Finder falls back to the closest scored machines instead of showing a dead end."
+msgstr ""
+
+#: page-finder.php:147
+msgid "Question Flow"
+msgstr ""
+
+#: page-finder.php:148
+msgid "Answer the four Finder questions"
+msgstr ""
+
+#: page-finder.php:162
+msgid "Step %d"
+msgstr ""
+
+#: page-finder.php:179
+msgid "Use this option to guide the shortlist."
+msgstr ""
+
+#: page-finder.php:213
+msgid "Show Recommendations"
+msgstr ""
+
+#: page-finder.php:209
+msgid "Next Question"
+msgstr ""
+
+#: page-finder.php:218
+msgid "Reset Finder"
+msgstr ""
+
+#: page-finder.php:233
+msgid "Finder Results"
+msgstr ""
+
+#: page-finder.php:235
+msgid "Recommended machines based on your answers"
+msgstr ""
+
+#: page-finder.php:235
+msgid "Submit the Finder to see recommendations"
+msgstr ""
+
+#: page-finder.php:346
+msgid "The Finder is ready when you are"
+msgstr ""
+
+#: page-finder.php:347
+msgid "Work through the questions above. Once the answers are submitted, the Finder will return one to three machines with the reasons they fit the shortlist."
+msgstr ""
+
+#: page-finder.php:268
+msgid "No exact match was available, so these are the safest fallback options."
+msgstr ""
+
+#: page-finder.php:270
+msgid "These are the closest matches to your Finder answers."
+msgstr ""
+
+#: page-finder.php:271
+msgid "These machines match the Finder rules most closely."
+msgstr ""
+
+#: page-finder.php:275
+msgid "Use the reasons under each machine to understand why it was selected, then move to detail or compare before requesting a quote."
+msgstr ""
+
+#: page-finder.php:279
+msgid "Browse Matching Catalog"
+msgstr ""
+
+#: page-finder.php:283
+msgid "Compare Recommendations"
+msgstr ""
+
+#: page-finder.php:316
+msgid "Why it matched"
+msgstr ""
+
+#: page-finder.php:358
+msgid "Need Another Path?"
+msgstr ""
+
+#: page-finder.php:359
+msgid "Switch from Finder to catalog, compare, or direct quote"
+msgstr ""
+
+#: page-finder.php:360
+msgid "Finder is only one entry point. If the shortlist is already clear, move to the machine detail page or compare view. If the requirements are still fuzzy, ask the sales team directly."
+msgstr ""
+
+#: page.php:35
+msgid "Site Page"
+msgstr ""
+
+#: page.php:51
+msgid "Fallback Route"
+msgstr ""
+
+#: page.php:52
+msgid "This default page template now stays inside the industrial theme system, so unassigned pages do not fall back to the old starter-theme skeleton."
+msgstr ""
+
+#: search.php:27
+msgid "Search"
+msgstr ""
+
+#. translators: %s: search query.
+#: search.php:32
+msgid "Results for \"%s\""
+msgstr ""
+
+#. translators: %d: result count
+#: search.php:42
+msgid "%d result found across the current site content."
+msgid_plural "%d results found across the current site content."
+msgstr[0] ""
+msgstr[1] ""
+
+#: search.php:60
+msgid "Search results now stay inside the same industrial listing system as the rest of the site, instead of dropping into the old starter-theme search template."
+msgstr ""
+
+#: single-product.php:45
+msgid "Add To Compare Shortlist"
+msgstr ""
+
+#: single-product.php:46
+msgid "Shortlisted For Compare"
+msgstr ""
+
+#: single-product.php:53
+msgid "3-year coverage with technical support for installation, setup, and after-sales troubleshooting."
+msgstr ""
+
+#: single-product.php:54
+msgid "Add to Cart"
+msgstr ""
+
+#: single-product.php:55
+msgid "Configured for industrial buyers who need reliable output, straightforward setup, and fast quoting support."
+msgstr ""
+
+#. translators: %s: machine category
+#: single-product.php:71
+msgid "Shortlist this %s for daily production environments that need stable output and repeatable results."
+msgstr ""
+
+#: single-product.php:74
+msgid "Use it when buyers need a clear spec sheet, simple comparison data, and a direct quote or checkout path."
+msgstr ""
+
+#: single-product.php:75
+msgid "Fit it into procurement workflows where serviceability, training support, and warranty coverage matter."
+msgstr ""
+
+#: single-product.php:83
+msgid "Output"
+msgstr ""
+
+#: single-product.php:84
+msgid "Industrial-ready power"
+msgstr ""
+
+#: single-product.php:85
+msgid "Configured for %s sustained workloads."
+msgstr ""
+
+#: single-product.php:85
+msgid "Balanced for production runs where uptime matters more than brochure specs."
+msgstr ""
+
+#: single-product.php:88
+msgid "Setup"
+msgstr ""
+
+#: single-product.php:89
+msgid "Factory-configured input"
+msgstr ""
+
+#: single-product.php:90
+msgid "Review the power requirement before purchase to keep installation friction low."
+msgstr ""
+
+#: single-product.php:93
+msgid "Best Fit"
+msgstr ""
+
+#: single-product.php:94
+msgid "Industrial applications"
+msgstr ""
+
+#: single-product.php:95
+msgid "A strong fit when buyers need fast comparison, easy quoting, and dependable support coverage."
+msgstr ""
+
+#: single-product.php:101
+msgid "Coverage"
+msgstr ""
+
+#: single-product.php:103
+msgid "Warranty"
+msgstr ""
+
+#: single-product.php:106
+msgid "Decision Support"
+msgstr ""
+
+#: single-product.php:107
+msgid "Compare this machine with alternatives, request a tailored quote, or speak with a specialist before placing an order."
+msgstr ""
+
+#: single-product.php:108
+msgid "Conversion Path"
+msgstr ""
+
+#: single-product.php:111, single-product.php:285
+msgid "Documentation"
+msgstr ""
+
+#: single-product.php:112
+msgid "Specification sheet available for procurement review and internal approval."
+msgstr ""
+
+#: single-product.php:112
+msgid "Specification sheet can be requested directly from the sales team."
+msgstr ""
+
+#: single-product.php:113
+msgid "Procurement"
+msgstr ""
+
+#: single-product.php:119
+msgid "Can I compare this machine before deciding?"
+msgstr ""
+
+#: single-product.php:120
+msgid "Yes. Use the compare action to place this machine next to other shortlisted models and review the key differences before sending an inquiry or checking out."
+msgstr ""
+
+#: single-product.php:123
+msgid "How fast can I get specs or documentation?"
+msgstr ""
+
+#: single-product.php:124
+msgid "The spec sheet is already available from the downloads section, so your team can review it immediately."
+msgstr ""
+
+#: single-product.php:124
+msgid "If the spec sheet is not published yet, request it from the sales team and they can send the documentation directly."
+msgstr ""
+
+#: single-product.php:127
+msgid "What support is included after purchase?"
+msgstr ""
+
+#: single-product.php:136
+msgid "Breadcrumb"
+msgstr ""
+
+#: single-product.php:171
+msgid "Factory-tested for B2B buyers"
+msgstr ""
+
+#: single-product.php:162
+msgid "%s review"
+msgid_plural "%s reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+#: single-product.php:165
+msgid "Verified buyer feedback"
+msgstr ""
+
+#: single-product.php:207
+msgid "Machine image will be added here"
+msgstr ""
+
+#: single-product.php:208
+msgid "The detail template stays stable even when the media library is still being populated."
+msgstr ""
+
+#: single-product.php:225
+msgid "Primary Conversion"
+msgstr ""
+
+#: single-product.php:226
+msgid "Ready to move this machine forward?"
+msgstr ""
+
+#: single-product.php:230
+msgid "Pricing"
+msgstr ""
+
+#: single-product.php:286
+msgid "Available now"
+msgstr ""
+
+#: single-product.php:286
+msgid "Send on request"
+msgstr ""
+
+#: single-product.php:289
+msgid "After-sales support"
+msgstr ""
+
+#: single-product.php:290
+msgid "Included"
+msgstr ""
+
+#: single-product.php:297
+msgid "Decision Notes"
+msgstr ""
+
+#: single-product.php:331
+msgid "Quick Value"
+msgstr ""
+
+#: single-product.php:332
+msgid "What this machine helps your team decide fast"
+msgstr ""
+
+#: single-product.php:335
+msgid "Send It To Compare"
+msgstr ""
+
+#: single-product.php:355
+msgid "Overview"
+msgstr ""
+
+#: single-product.php:356
+msgid "Operational context and buying notes"
+msgstr ""
+
+#: single-product.php:365
+msgid "Specs"
+msgstr ""
+
+#: single-product.php:366
+msgid "Specification snapshot"
+msgstr ""
+
+#: single-product.php:370
+msgid "Download Specs"
+msgstr ""
+
+#: single-product.php:390
+msgid "Detailed specs are being finalized"
+msgstr ""
+
+#: single-product.php:391
+msgid "Use the quote path if your buyer needs the full technical sheet before placing an order."
+msgstr ""
+
+#: single-product.php:413
+msgid "Video Demo"
+msgstr ""
+
+#: single-product.php:414
+msgid "Show the team how this machine looks in action"
+msgstr ""
+
+#: single-product.php:422
+msgid "Demo video coming soon"
+msgstr ""
+
+#: single-product.php:423
+msgid "The conversion path still stays intact: use the spec sheet, compare workflow, and quote action while the media asset is being prepared."
+msgstr ""
+
+#: single-product.php:427
+msgid "Review Spec Sheet"
+msgstr ""
+
+#: single-product.php:440
+msgid "Use Cases"
+msgstr ""
+
+#: single-product.php:441
+msgid "When this machine is usually shortlisted"
+msgstr ""
+
+#: single-product.php:455
+msgid "FAQ"
+msgstr ""
+
+#: single-product.php:456
+msgid "Questions buyers usually ask before converting"
+msgstr ""
+
+#: single-product.php:479
+msgid "Compare CTA"
+msgstr ""
+
+#: single-product.php:480
+msgid "Still deciding between models?"
+msgstr ""
+
+#: single-product.php:482
+msgid "Push this machine into the compare workflow, review alternatives side by side, then return with a shorter and more confident shortlist."
+msgstr ""
+
+#: single-product.php:497
+msgid "Browse More Machines"
+msgstr ""
+
+#: single-product.php:508
+msgid "Ready To Convert"
+msgstr ""
+
+#: single.php:25, single.php:39
+msgid "Previous Entry"
+msgstr ""
+
+#: single.php:29, single.php:47
+msgid "Next Entry"
+msgstr ""
+
+#: single.php:40
+msgid "No earlier post is available in this sequence."
+msgstr ""
+
+#: single.php:48
+msgid "No newer post is available in this sequence."
+msgstr ""
+
+#: template-parts/content-none.php:25
+msgid "Nothing Found"
+msgstr ""
+
+#: template-parts/content-none.php:33
+msgid "There is no content for this route yet"
+msgstr ""
+
+#: template-parts/content-none.php:31
+msgid "The post index is ready for the first article"
+msgstr ""
+
+#: template-parts/content-none.php:29
+msgid "No matching results were found for this search"
+msgstr ""
+
+#: template-parts/content-none.php:58
+msgid "Try the search form below, or move to the catalog and Finder if you are looking for the right machine rather than an article or page."
+msgstr ""
+
+#: template-parts/content-none.php:56
+msgid "Try a different keyword, or switch to the machine catalog and Finder when the real goal is product selection rather than content lookup."
+msgstr ""
+
+#: template-parts/content-none.php:44
+msgid "Ready to publish the first post? <a href=\"%s\">Create it from the dashboard</a>."
+msgstr ""
+
+#: template-parts/content-page.php:30, template-parts/content.php:103
+msgid "Pages"
+msgstr ""
+
+#. translators: %s: page title for screen readers.
+#: template-parts/content-page.php:44, template-parts/content.php:133
+msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgstr ""
+
+#: template-parts/content-search.php:29, template-parts/content-search.php:35
+msgid "Result"
+msgstr ""
+
+#: template-parts/content-search.php:55
+msgid "Open Result"
+msgstr ""
+
+#: template-parts/content.php:19
+msgid "Back To Blog"
+msgstr ""
+
+#: template-parts/content.php:20
+msgid "Back To Archive"
+msgstr ""
+
+#: template-parts/content.php:163, template-parts/content.php:174, template-parts/content.php:36
+msgid "Entry"
+msgstr ""
+
+#: template-parts/content.php:172, template-parts/content.php:34
+msgid "Insight Article"
+msgstr ""
+
+#: template-parts/content.php:51
+msgid "By %s"
+msgstr ""
+
+#: template-parts/content.php:90
+msgid "Continue reading <span class=\"screen-reader-text\">%s</span>"
+msgstr ""
+
+#: template-parts/content.php:120
+msgid "Tagged"
+msgstr ""
