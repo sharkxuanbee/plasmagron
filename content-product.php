@@ -29,6 +29,8 @@ $is_selected_for_compare = in_array( $product_id, $selected_compare_ids, true );
 $compare_now_url         = industrial_welding_get_compare_url_for_ids( array( $product_id ) );
 $shortlist_add_label     = __( 'Add To Shortlist', 'industrial-welding' );
 $shortlist_selected_label = __( 'Shortlisted', 'industrial-welding' );
+$add_to_cart_label       = $product->add_to_cart_text();
+$can_add_to_cart         = $product->is_purchasable() && $product->is_in_stock();
 ?>
 
 <article id="product-<?php the_ID(); ?>" <?php wc_product_class( 'group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-800 bg-[linear-gradient(180deg,rgba(15,23,42,0.98),rgba(15,23,42,0.84))] shadow-[0_24px_55px_rgba(2,6,23,0.42)] transition duration-300 hover:-translate-y-1 hover:border-amber-300/40', $product ); ?>>
@@ -89,6 +91,20 @@ $shortlist_selected_label = __( 'Shortlisted', 'industrial-welding' );
 		</div>
 
 		<div class="mt-6 space-y-4">
+			<?php if ( $can_add_to_cart ) : ?>
+				<a
+					href="<?php echo esc_url( $product->add_to_cart_url() ); ?>"
+					data-quantity="1"
+					data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"
+					data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>"
+					aria-label="<?php echo esc_attr( wp_strip_all_tags( $add_to_cart_label ) ); ?>"
+					rel="nofollow"
+					class="inline-flex w-full items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-cyan-300 font-rajdhani add_to_cart_button product_type_<?php echo esc_attr( $product->get_type() ); ?> <?php echo $product->supports( 'ajax_add_to_cart' ) ? 'ajax_add_to_cart' : ''; ?>"
+				>
+					<?php echo esc_html( $add_to_cart_label ); ?>
+				</a>
+			<?php endif; ?>
+
 			<label class="flex items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-950/75 px-4 py-3 text-sm text-slate-200 cursor-pointer">
 				<span class="font-semibold"><?php esc_html_e( 'Add to compare shortlist', 'industrial-welding' ); ?></span>
 				<input
