@@ -14,6 +14,8 @@ $contact_url             = industrial_welding_get_contact_page_url();
 $catalog_url             = industrial_welding_get_catalog_url();
 $finder_url              = industrial_welding_get_finder_page_url();
 $compare_url             = industrial_welding_get_compare_page_url();
+$cart_url                = industrial_welding_get_cart_page_url();
+$account_url             = industrial_welding_get_account_page_url();
 $has_footer_widgets      = is_active_sidebar( 'footer-1' ) || is_active_sidebar( 'footer-2' ) || is_active_sidebar( 'footer-3' );
 $decision_navigation     = array(
 	array(
@@ -33,7 +35,7 @@ $decision_navigation     = array(
 		'url'   => $catalog_url,
 	),
 	array(
-		'label' => __( 'Documentation Or Bulk Quote', 'industrial-welding' ),
+		'label' => __( 'Cart And Checkout Support', 'industrial-welding' ),
 		'url'   => $contact_url,
 	),
 );
@@ -60,8 +62,8 @@ $decision_navigation     = array(
 						<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
 							<?php esc_html_e( 'Browse Machines', 'industrial-welding' ); ?>
 						</a>
-						<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-							<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+						<a href="<?php echo esc_url( $cart_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+							<?php esc_html_e( 'Open Cart', 'industrial-welding' ); ?>
 						</a>
 					</div>
 				</div>
@@ -131,7 +133,7 @@ $decision_navigation     = array(
 						</li>
 						<li>
 							<p class="text-xs uppercase tracking-[0.16em] text-slate-500 font-semibold mb-1"><?php esc_html_e( 'Support Window', 'industrial-welding' ); ?></p>
-							<span><?php esc_html_e( 'Quote, spec sheet, and after-sales questions handled through the same contact route.', 'industrial-welding' ); ?></span>
+							<span><?php esc_html_e( 'Cart, payment, spec sheet, and after-sales questions handled through the same support route.', 'industrial-welding' ); ?></span>
 						</li>
 					</ul>
 				</div>
@@ -166,7 +168,7 @@ $decision_navigation     = array(
 				<div class="flex flex-wrap gap-5 text-sm text-slate-500">
 					<a href="<?php echo esc_url( $contact_url ); ?>" class="transition hover:text-slate-300"><?php esc_html_e( 'Privacy', 'industrial-welding' ); ?></a>
 					<a href="<?php echo esc_url( $contact_url ); ?>" class="transition hover:text-slate-300"><?php esc_html_e( 'Terms', 'industrial-welding' ); ?></a>
-					<a href="<?php echo esc_url( $contact_url ); ?>" class="transition hover:text-slate-300"><?php esc_html_e( 'Support', 'industrial-welding' ); ?></a>
+					<a href="<?php echo esc_url( $account_url ); ?>" class="transition hover:text-slate-300"><?php esc_html_e( 'My Account', 'industrial-welding' ); ?></a>
 				</div>
 			</div>
 		</div>

@@ -27,7 +27,7 @@ $page_title  = get_the_title() ? get_the_title() : __( 'Contact Us', 'industrial
 					<?php echo esc_html( $page_title ); ?>
 				</h1>
 				<p class="mt-5 max-w-3xl text-lg md:text-xl text-slate-300 leading-relaxed">
-					<?php esc_html_e( 'Use this page for quote requests, specification questions, bulk-buying support, warranty follow-up, and pre-purchase guidance on the right machine for the job.', 'industrial-welding' ); ?>
+					<?php esc_html_e( 'Use this page for pricing questions, specification requests, bulk-buying support, payment follow-up, warranty follow-up, and pre-purchase guidance on the right machine for the job.', 'industrial-welding' ); ?>
 				</p>
 				<div class="mt-8 flex flex-col sm:flex-row gap-3">
 					<a href="<?php echo esc_url( industrial_welding_get_contact_phone_href() ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
@@ -57,7 +57,7 @@ $page_title  = get_the_title() ? get_the_title() : __( 'Contact Us', 'industrial
 			<div class="rounded-[1.5rem] border border-slate-800 bg-slate-950/78 p-6 shadow-[0_20px_40px_rgba(2,6,23,0.3)]">
 				<p class="text-xs uppercase tracking-[0.24em] text-slate-500 font-semibold"><?php esc_html_e( 'Sales Line', 'industrial-welding' ); ?></p>
 				<p class="mt-3 text-2xl font-bold text-white font-rajdhani"><?php echo esc_html( industrial_welding_get_contact_phone_label() ); ?></p>
-				<p class="mt-3 text-sm text-slate-300"><?php esc_html_e( 'Best for urgent quote requests, product matching, and stock questions.', 'industrial-welding' ); ?></p>
+				<p class="mt-3 text-sm text-slate-300"><?php esc_html_e( 'Best for urgent pricing questions, product matching, and stock questions.', 'industrial-welding' ); ?></p>
 			</div>
 
 			<div class="rounded-[1.5rem] border border-slate-800 bg-slate-950/78 p-6 shadow-[0_20px_40px_rgba(2,6,23,0.3)]">

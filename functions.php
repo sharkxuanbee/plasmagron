@@ -162,7 +162,20 @@ function industrial_welding_get_internal_menu_url_by_label( $label ) {
 		case 'quick compare':
 			return industrial_welding_get_compare_page_url();
 
+		case 'cart':
+		case 'view cart':
+			return industrial_welding_get_cart_page_url();
+
+		case 'checkout':
+			return industrial_welding_get_checkout_page_url();
+
+		case 'account':
+		case 'my account':
+		case 'orders':
+			return industrial_welding_get_account_page_url();
+
 		case 'contact':
+		case 'contact sales':
 		case 'request quote':
 		case 'documentation or bulk quote':
 		case 'privacy':
@@ -334,6 +347,123 @@ function industrial_welding_get_compare_page_url() {
 }
 
 /**
+ * Get the cart page URL.
+ *
+ * @return string
+ */
+function industrial_welding_get_cart_page_url() {
+	if ( industrial_welding_is_woocommerce_active() && function_exists( 'wc_get_cart_url' ) ) {
+		$cart_url = wc_get_cart_url();
+
+		if ( $cart_url ) {
+			return $cart_url;
+		}
+	}
+
+	$page = get_page_by_path( 'cart' );
+
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+
+	return home_url( '/cart/' );
+}
+
+/**
+ * Get the checkout page URL.
+ *
+ * @return string
+ */
+function industrial_welding_get_checkout_page_url() {
+	if ( industrial_welding_is_woocommerce_active() && function_exists( 'wc_get_checkout_url' ) ) {
+		$checkout_url = wc_get_checkout_url();
+
+		if ( $checkout_url ) {
+			return $checkout_url;
+		}
+	}
+
+	$page = get_page_by_path( 'checkout' );
+
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+
+	return home_url( '/checkout/' );
+}
+
+/**
+ * Get the My Account page URL.
+ *
+ * @return string
+ */
+function industrial_welding_get_account_page_url() {
+	if ( industrial_welding_is_woocommerce_active() && function_exists( 'wc_get_page_permalink' ) ) {
+		$account_url = wc_get_page_permalink( 'myaccount' );
+
+		if ( $account_url ) {
+			return $account_url;
+		}
+	}
+
+	$page = get_page_by_path( 'my-account' );
+
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+
+	return home_url( '/my-account/' );
+}
+
+/**
+ * Get the current cart item count.
+ *
+ * @return int
+ */
+function industrial_welding_get_cart_count() {
+	if ( ! industrial_welding_is_woocommerce_active() || ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return 0;
+	}
+
+	return (int) WC()->cart->get_cart_contents_count();
+}
+
+/**
+ * Get the cart count badge markup used by the header and cart fragments.
+ *
+ * @return string
+ */
+function industrial_welding_get_cart_count_badge_markup() {
+	$count = industrial_welding_get_cart_count();
+
+	return sprintf(
+		'<span class="industrial-cart-count inline-flex items-center justify-center rounded-full bg-amber-400 px-2 py-1 text-xs font-bold leading-none text-slate-950 font-rajdhani">%s</span>',
+		esc_html( number_format_i18n( $count ) )
+	);
+}
+
+/**
+ * Output WooCommerce notices in templates that do not print them natively.
+ */
+function industrial_welding_maybe_render_global_woocommerce_notices() {
+	if ( ! industrial_welding_is_woocommerce_active() || ! function_exists( 'wc_notice_count' ) || ! function_exists( 'woocommerce_output_all_notices' ) ) {
+		return;
+	}
+
+	if ( is_cart() || is_checkout() || is_account_page() ) {
+		return;
+	}
+
+	if ( wc_notice_count() <= 0 ) {
+		return;
+	}
+
+	echo '<div class="industrial-woocommerce-notices-wrap bg-slate-950 border-b border-slate-800"><div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">';
+	woocommerce_output_all_notices();
+	echo '</div></div>';
+}
+
+/**
  * Build a compare URL from a shortlist of product IDs.
  *
  * @param int[] $product_ids Product IDs.
@@ -473,7 +603,7 @@ function industrial_welding_get_brand_intro() {
  * @return string
  */
 function industrial_welding_get_request_quote_label() {
-	return __( 'Request Quote', 'industrial-welding' );
+	return __( 'Contact Sales', 'industrial-welding' );
 }
 
 /**
@@ -729,6 +859,63 @@ function industrial_welding_get_product_summary( $product, $length = 24 ) {
 	}
 
 	return $summary ? wp_trim_words( $summary, $length ) : '';
+}
+
+/**
+ * Get the primary purchase action for a product in non-PDP contexts.
+ *
+ * Simple in-stock products jump straight into cart. More complex product types
+ * fall back to the detail page so configuration still happens in one place.
+ *
+ * @param WC_Product|int $product Product object or ID.
+ * @return array<string, mixed>
+ */
+function industrial_welding_get_product_purchase_action( $product ) {
+	$product_object = null;
+
+	if ( class_exists( 'WC_Product' ) && $product instanceof WC_Product ) {
+		$product_object = $product;
+	} elseif ( function_exists( 'wc_get_product' ) ) {
+		$product_object = wc_get_product( $product );
+	}
+
+	if ( ! $product_object ) {
+		return array(
+			'url'       => '',
+			'label'     => __( 'View Machine', 'industrial-welding' ),
+			'is_direct' => false,
+		);
+	}
+
+	$product_id   = $product_object->get_id();
+	$product_link = get_permalink( $product_id );
+	$action       = array(
+		'url'       => $product_link,
+		'label'     => __( 'View Machine', 'industrial-welding' ),
+		'is_direct' => false,
+	);
+
+	if ( ! $product_object->is_purchasable() || ! $product_object->is_in_stock() ) {
+		return $action;
+	}
+
+	if ( $product_object->is_type( 'simple' ) ) {
+		return array(
+			'url'       => add_query_arg( 'add-to-cart', $product_id, industrial_welding_get_cart_page_url() ),
+			'label'     => __( 'Add To Cart', 'industrial-welding' ),
+			'is_direct' => true,
+		);
+	}
+
+	if ( $product_object->is_type( 'external' ) ) {
+		return array(
+			'url'       => $product_object->add_to_cart_url(),
+			'label'     => $product_object->add_to_cart_text(),
+			'is_direct' => true,
+		);
+	}
+
+	return $action;
 }
 
 /**
@@ -2131,6 +2318,29 @@ function industrial_welding_ensure_shop_page() {
 function industrial_welding_ensure_core_pages() {
 	industrial_welding_ensure_shop_page();
 
+	if ( industrial_welding_is_woocommerce_active() ) {
+		industrial_welding_ensure_woocommerce_content_page(
+			'cart',
+			__( 'Cart', 'industrial-welding' ),
+			'woocommerce_cart_page_id',
+			'[woocommerce_cart]'
+		);
+
+		industrial_welding_ensure_woocommerce_content_page(
+			'checkout',
+			__( 'Checkout', 'industrial-welding' ),
+			'woocommerce_checkout_page_id',
+			'[woocommerce_checkout]'
+		);
+
+		industrial_welding_ensure_woocommerce_content_page(
+			'my-account',
+			__( 'My Account', 'industrial-welding' ),
+			'woocommerce_myaccount_page_id',
+			'[woocommerce_my_account]'
+		);
+	}
+
 	$pages = array(
 		'finder'  => array(
 			'title'    => __( 'Welder Finder', 'industrial-welding' ),
@@ -2215,6 +2425,41 @@ function industrial_welding_get_theme_version() {
 }
 
 /**
+ * Ensure a WooCommerce content page exists, has baseline shortcode content when empty,
+ * and stays wired to the matching WooCommerce option.
+ *
+ * @param string $slug        Page slug.
+ * @param string $title       Page title.
+ * @param string $option_name WooCommerce page option name.
+ * @param string $shortcode   Page shortcode content.
+ * @return int
+ */
+function industrial_welding_ensure_woocommerce_content_page( $slug, $title, $option_name, $shortcode ) {
+	$page_id = industrial_welding_ensure_page( $slug, $title );
+
+	if ( ! $page_id ) {
+		return 0;
+	}
+
+	$current_content = trim( (string) get_post_field( 'post_content', $page_id ) );
+
+	if ( '' === $current_content ) {
+		wp_update_post(
+			array(
+				'ID'           => $page_id,
+				'post_content' => $shortcode,
+			)
+		);
+	}
+
+	if ( industrial_welding_is_woocommerce_active() && absint( get_option( $option_name ) ) !== $page_id ) {
+		update_option( $option_name, $page_id );
+	}
+
+	return $page_id;
+}
+
+/**
  * Initial theme activation hook.
  */
 function industrial_welding_activate() {
@@ -2258,21 +2503,39 @@ function industrial_welding_maybe_run_upgrade() {
 add_action( 'init', 'industrial_welding_maybe_run_upgrade', 25 );
 
 /**
- * Ensure the shop page remains wired to WooCommerce.
+ * Ensure core WooCommerce pages remain wired after plugin activation or option resets.
  */
-function industrial_welding_maybe_sync_shop_page() {
+function industrial_welding_maybe_sync_woocommerce_pages() {
 	if ( ! industrial_welding_is_woocommerce_active() ) {
 		return;
 	}
 
-	if ( wc_get_page_id( 'shop' ) > 0 ) {
+	$required_pages_exist = wc_get_page_id( 'shop' ) > 0
+		&& wc_get_page_id( 'cart' ) > 0
+		&& wc_get_page_id( 'checkout' ) > 0
+		&& wc_get_page_id( 'myaccount' ) > 0;
+
+	if ( $required_pages_exist ) {
 		return;
 	}
 
-	industrial_welding_ensure_shop_page();
+	industrial_welding_ensure_core_pages();
 	update_option( 'industrial_welding_flush_rules', true );
 }
-add_action( 'admin_init', 'industrial_welding_maybe_sync_shop_page' );
+add_action( 'admin_init', 'industrial_welding_maybe_sync_woocommerce_pages' );
+
+/**
+ * Refresh the header cart count badge when WooCommerce updates fragments via AJAX.
+ *
+ * @param array<string, string> $fragments Fragment map.
+ * @return array<string, string>
+ */
+function industrial_welding_add_to_cart_fragments( $fragments ) {
+	$fragments['.industrial-cart-count'] = industrial_welding_get_cart_count_badge_markup();
+
+	return $fragments;
+}
+add_filter( 'woocommerce_add_to_cart_fragments', 'industrial_welding_add_to_cart_fragments' );
 
 /**
  * Flush rewrite rules on init if our flag is set.
