@@ -71,7 +71,7 @@ while ( have_posts() ) :
 				__( 'Shortlist this %s for daily production environments that need stable output and repeatable results.', 'industrial-welding' ),
 				$primary_term ? $primary_term->name : strtolower( industrial_welding_get_machine_label() )
 			),
-			__( 'Use it when buyers need a clear spec sheet, simple comparison data, and a direct quote or checkout path.', 'industrial-welding' ),
+			__( 'Use it when buyers need a clear spec sheet, simple comparison data, and a direct cart or checkout path.', 'industrial-welding' ),
 			__( 'Fit it into procurement workflows where serviceability, training support, and warranty coverage matter.', 'industrial-welding' ),
 		);
 	}
@@ -92,7 +92,7 @@ while ( have_posts() ) :
 		array(
 			'eyebrow'     => __( 'Best Fit', 'industrial-welding' ),
 			'title'       => $primary_term ? $primary_term->name : __( 'Industrial applications', 'industrial-welding' ),
-			'description' => $product_meta['best_for'] ? wp_trim_words( wp_strip_all_tags( $product_meta['best_for'] ), 18 ) : __( 'A strong fit when buyers need fast comparison, easy quoting, and dependable support coverage.', 'industrial-welding' ),
+			'description' => $product_meta['best_for'] ? wp_trim_words( wp_strip_all_tags( $product_meta['best_for'] ), 18 ) : __( 'A strong fit when buyers need fast comparison, easy checkout, and dependable support coverage.', 'industrial-welding' ),
 		),
 	);
 
@@ -104,7 +104,7 @@ while ( have_posts() ) :
 		),
 		array(
 			'title'       => __( 'Decision Support', 'industrial-welding' ),
-			'detail'      => __( 'Compare this machine with alternatives, request a tailored quote, or speak with a specialist before placing an order.', 'industrial-welding' ),
+			'detail'      => __( 'Compare this machine with alternatives, add it to cart, or speak with a specialist before placing an order.', 'industrial-welding' ),
 			'kicker'      => __( 'Conversion Path', 'industrial-welding' ),
 		),
 		array(
@@ -117,7 +117,7 @@ while ( have_posts() ) :
 	$faq_items = array(
 		array(
 			'question' => __( 'Can I compare this machine before deciding?', 'industrial-welding' ),
-			'answer'   => __( 'Yes. Use the compare action to place this machine next to other shortlisted models and review the key differences before sending an inquiry or checking out.', 'industrial-welding' ),
+			'answer'   => __( 'Yes. Use the compare action to place this machine next to other shortlisted models and review the key differences before adding it to cart or checking out.', 'industrial-welding' ),
 		),
 		array(
 			'question' => __( 'How fast can I get specs or documentation?', 'industrial-welding' ),
@@ -388,7 +388,7 @@ while ( have_posts() ) :
 					<?php else : ?>
 						<div class="rounded-3xl border border-dashed border-slate-700 bg-slate-950/65 p-8 text-center">
 							<p class="text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Detailed specs are being finalized', 'industrial-welding' ); ?></p>
-							<p class="mt-2 text-slate-400"><?php esc_html_e( 'Use the quote path if your buyer needs the full technical sheet before placing an order.', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-slate-400"><?php esc_html_e( 'Use the contact path if your buyer needs the full technical sheet before placing an order.', 'industrial-welding' ); ?></p>
 						</div>
 					<?php endif; ?>
 
@@ -420,7 +420,7 @@ while ( have_posts() ) :
 					<?php else : ?>
 						<div class="mt-6 rounded-[1.5rem] border border-dashed border-slate-700 bg-slate-950/75 p-8 md:p-10">
 							<p class="text-xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Demo video coming soon', 'industrial-welding' ); ?></p>
-							<p class="mt-3 text-slate-300 leading-relaxed"><?php esc_html_e( 'The conversion path still stays intact: use the spec sheet, compare workflow, and quote action while the media asset is being prepared.', 'industrial-welding' ); ?></p>
+							<p class="mt-3 text-slate-300 leading-relaxed"><?php esc_html_e( 'The conversion path still stays intact: use the spec sheet, compare workflow, and cart action while the media asset is being prepared.', 'industrial-welding' ); ?></p>
 							<div class="mt-6 flex flex-col sm:flex-row gap-3">
 								<?php if ( $product_meta['download_pdf'] ) : ?>
 									<a href="<?php echo esc_url( $product_meta['download_pdf'] ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani" target="_blank" rel="noopener noreferrer">

@@ -14,6 +14,7 @@ get_header();
 $finder_url        = industrial_welding_get_finder_page_url();
 $catalog_url       = industrial_welding_get_catalog_url();
 $compare_url       = industrial_welding_get_compare_page_url();
+$cart_url          = industrial_welding_get_cart_page_url();
 $contact_url       = industrial_welding_get_contact_page_url();
 $taxonomy_config   = industrial_welding_get_filterable_catalog_taxonomies();
 $thickness_options = industrial_welding_get_finder_thickness_options();
@@ -272,7 +273,7 @@ $finder_steps = array(
 							);
 							?>
 						</h3>
-						<p class="mt-3 text-slate-300 leading-relaxed"><?php esc_html_e( 'Use the reasons under each machine to understand why it was selected, then move to detail or compare before requesting a quote.', 'industrial-welding' ); ?></p>
+						<p class="mt-3 text-slate-300 leading-relaxed"><?php esc_html_e( 'Use the reasons under each machine to understand why it was selected, then move to detail, cart, or compare with a clearer purchase path.', 'industrial-welding' ); ?></p>
 					</div>
 					<div class="flex flex-col sm:flex-row gap-3">
 						<a href="<?php echo esc_url( $recommendations['catalog_url'] ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
@@ -289,6 +290,7 @@ $finder_steps = array(
 
 			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 				<?php foreach ( $recommendations['items'] as $item ) : ?>
+					<?php $purchase_action = industrial_welding_get_product_purchase_action( $item['id'] ); ?>
 					<article class="overflow-hidden rounded-[1.8rem] border border-slate-800 bg-slate-900/75 shadow-[0_20px_50px_rgba(2,6,23,0.38)]">
 						<?php if ( $item['thumbnail'] ) : ?>
 							<img src="<?php echo esc_url( $item['thumbnail'] ); ?>" alt="<?php echo esc_attr( $item['title'] ); ?>" class="h-56 w-full object-cover object-center">
@@ -328,8 +330,8 @@ $finder_steps = array(
 								<a href="<?php echo esc_url( $item['permalink'] ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
 									<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
 								</a>
-								<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
-									<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+								<a href="<?php echo esc_url( $purchase_action['url'] ? $purchase_action['url'] : $cart_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+									<?php echo esc_html( $purchase_action['label'] ? $purchase_action['label'] : __( 'Open Cart', 'industrial-welding' ) ); ?>
 								</a>
 							</div>
 						</div>
@@ -356,8 +358,8 @@ $finder_steps = array(
 			<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-8 items-center">
 				<div>
 					<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-3"><?php esc_html_e( 'Need Another Path?', 'industrial-welding' ); ?></p>
-					<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Switch from Finder to catalog, compare, or direct quote', 'industrial-welding' ); ?></h2>
-					<p class="mt-4 text-slate-300 leading-relaxed"><?php esc_html_e( 'Finder is only one entry point. If the shortlist is already clear, move to the machine detail page or compare view. If the requirements are still fuzzy, ask the sales team directly.', 'industrial-welding' ); ?></p>
+					<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Switch from Finder to catalog, compare, cart, or direct checkout prep', 'industrial-welding' ); ?></h2>
+					<p class="mt-4 text-slate-300 leading-relaxed"><?php esc_html_e( 'Finder is only one entry point. If the shortlist is already clear, move into detail, compare, or cart. If the requirements are still fuzzy, ask the sales team directly.', 'industrial-welding' ); ?></p>
 				</div>
 				<div class="flex flex-col sm:flex-row gap-3">
 					<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
@@ -366,8 +368,8 @@ $finder_steps = array(
 					<a href="<?php echo esc_url( $compare_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
 						<?php esc_html_e( 'Compare Machines', 'industrial-welding' ); ?>
 					</a>
-					<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+					<a href="<?php echo esc_url( $cart_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+						<?php esc_html_e( 'Open Cart', 'industrial-welding' ); ?>
 					</a>
 				</div>
 			</div>

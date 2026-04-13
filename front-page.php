@@ -14,6 +14,7 @@ get_header();
 $catalog_url       = industrial_welding_get_catalog_url();
 $finder_url        = industrial_welding_get_finder_page_url();
 $compare_url       = industrial_welding_get_compare_page_url();
+$cart_url          = industrial_welding_get_cart_page_url();
 $contact_url       = industrial_welding_get_contact_page_url();
 $featured_query    = new WP_Query( industrial_welding_get_featured_products_query_args( 4 ) );
 $featured_machines = array();
@@ -23,6 +24,7 @@ if ( $featured_query->have_posts() ) {
 		$featured_query->the_post();
 		$product = industrial_welding_is_woocommerce_active() ? wc_get_product( get_the_ID() ) : null;
 		$term    = industrial_welding_get_primary_product_term( get_the_ID() );
+		$action  = industrial_welding_get_product_purchase_action( $product ? $product : get_the_ID() );
 
 		$featured_machines[] = array(
 			'id'         => get_the_ID(),
@@ -33,6 +35,8 @@ if ( $featured_query->have_posts() ) {
 			'summary'    => $product ? industrial_welding_get_product_summary( $product, 20 ) : get_the_excerpt(),
 			'category'   => $term ? $term->name : industrial_welding_get_machine_label(),
 			'specs'      => industrial_welding_get_product_spec_entries( get_the_ID(), array( 'amperage', 'input_voltage', 'duty_cycle' ) ),
+			'action_url' => $action['url'],
+			'action_label' => $action['label'],
 		);
 	}
 
@@ -125,11 +129,11 @@ $how_to_choose_steps = array(
 	array(
 		'step'        => '02',
 		'title'       => __( 'Use filters and compare to tighten the shortlist', 'industrial-welding' ),
-		'description' => __( 'Usage, skill, budget, amperage, power input, and duty cycle should narrow the field before anyone asks for a quote.', 'industrial-welding' ),
+		'description' => __( 'Usage, skill, budget, amperage, power input, and duty cycle should narrow the field before anyone adds a machine to cart.', 'industrial-welding' ),
 	),
 	array(
 		'step'        => '03',
-		'title'       => __( 'Move into detail, quote, or checkout only after confidence is high', 'industrial-welding' ),
+		'title'       => __( 'Move into detail, cart, or checkout only after confidence is high', 'industrial-welding' ),
 		'description' => __( 'The conversion step should happen after the shortlist is credible, not while the buyer is still guessing which machine fits.', 'industrial-welding' ),
 	),
 );
@@ -137,7 +141,7 @@ $how_to_choose_steps = array(
 $trust_blocks = array(
 	array(
 		'title'       => __( 'Industrial-first detail pages', 'industrial-welding' ),
-		'description' => __( 'Every featured machine can route buyers into specs, compare, quote, or checkout without dead ends.', 'industrial-welding' ),
+		'description' => __( 'Every featured machine can route buyers into specs, compare, cart, or checkout without dead ends.', 'industrial-welding' ),
 	),
 	array(
 		'title'       => __( 'Compare-ready catalog flow', 'industrial-welding' ),
@@ -184,9 +188,9 @@ if ( empty( $use_case_entries ) ) {
 		),
 		array(
 			'title'       => __( 'Bulk Buyers', 'industrial-welding' ),
-			'description' => __( 'Go directly to the quote path when pricing, availability, or documentation needs a tailored response.', 'industrial-welding' ),
-			'url'         => $contact_url,
-			'label'       => industrial_welding_get_request_quote_label(),
+			'description' => __( 'Move straight into product detail, cart, and checkout when the right machine family is already clear.', 'industrial-welding' ),
+			'url'         => $catalog_url,
+			'label'       => __( 'Open Catalog', 'industrial-welding' ),
 		),
 	);
 }
@@ -223,7 +227,7 @@ if ( empty( $use_case_entries ) ) {
 						<?php endforeach; ?>
 					<?php else : ?>
 						<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/75 px-4 py-2 text-sm text-slate-300"><?php esc_html_e( 'Compare-ready catalog', 'industrial-welding' ); ?></span>
-						<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/75 px-4 py-2 text-sm text-slate-300"><?php esc_html_e( 'Quote or checkout path', 'industrial-welding' ); ?></span>
+						<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/75 px-4 py-2 text-sm text-slate-300"><?php esc_html_e( 'Cart and checkout path', 'industrial-welding' ); ?></span>
 						<span class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/75 px-4 py-2 text-sm text-slate-300"><?php esc_html_e( 'Support-first buying flow', 'industrial-welding' ); ?></span>
 					<?php endif; ?>
 				</div>
@@ -246,7 +250,7 @@ if ( empty( $use_case_entries ) ) {
 						<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
 							<p class="text-xs uppercase tracking-[0.18em] text-amber-300 font-semibold">03</p>
 							<p class="mt-2 text-lg font-bold text-white font-rajdhani"><?php esc_html_e( 'Convert from confidence', 'industrial-welding' ); ?></p>
-							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Finish on the detail page where the machine can move to quote or purchase cleanly after the selection logic is already clear.', 'industrial-welding' ); ?></p>
+							<p class="mt-2 text-sm text-slate-300"><?php esc_html_e( 'Finish on the detail page where the machine can move to cart or checkout cleanly after the selection logic is already clear.', 'industrial-welding' ); ?></p>
 						</div>
 					</div>
 				</div>
@@ -261,8 +265,8 @@ if ( empty( $use_case_entries ) ) {
 							<p class="text-xs uppercase tracking-[0.22em] text-amber-300 font-semibold"><?php esc_html_e( 'Featured Machine', 'industrial-welding' ); ?></p>
 							<h2 class="mt-3 text-3xl font-bold text-white font-rajdhani"><?php echo esc_html( $hero_machine['title'] ); ?></h2>
 							<p class="mt-3 text-slate-300 leading-relaxed"><?php echo esc_html( $hero_machine['summary'] ); ?></p>
-							<a href="<?php echo esc_url( $hero_machine['permalink'] ); ?>" class="mt-5 inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-								<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
+							<a href="<?php echo esc_url( $hero_machine['action_url'] ? $hero_machine['action_url'] : $hero_machine['permalink'] ); ?>" class="mt-5 inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+								<?php echo esc_html( $hero_machine['action_label'] ? $hero_machine['action_label'] : __( 'View Machine', 'industrial-welding' ) ); ?>
 							</a>
 						</div>
 					</div>
@@ -331,8 +335,8 @@ if ( empty( $use_case_entries ) ) {
 									<?php echo wp_kses_post( $machine['price_html'] ); ?>
 								</div>
 							<?php endif; ?>
-							<a href="<?php echo esc_url( $machine['permalink'] ); ?>" class="mt-5 inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-								<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
+							<a href="<?php echo esc_url( $machine['action_url'] ? $machine['action_url'] : $machine['permalink'] ); ?>" class="mt-5 inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+								<?php echo esc_html( $machine['action_label'] ? $machine['action_label'] : __( 'View Machine', 'industrial-welding' ) ); ?>
 							</a>
 						</div>
 					</article>
@@ -416,11 +420,11 @@ if ( empty( $use_case_entries ) ) {
 				<div>
 					<p class="text-xs uppercase tracking-[0.3em] text-amber-300 font-semibold mb-3"><?php esc_html_e( 'Strong CTA', 'industrial-welding' ); ?></p>
 					<h2 class="text-3xl md:text-4xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Need a faster route to the right machine?', 'industrial-welding' ); ?></h2>
-					<p class="mt-4 max-w-3xl text-slate-300 leading-relaxed"><?php esc_html_e( 'Send the sales team your application, power setup, and quantity target. They can point you to the right machines, send the documentation, and help finalize the shortlist.', 'industrial-welding' ); ?></p>
+					<p class="mt-4 max-w-3xl text-slate-300 leading-relaxed"><?php esc_html_e( 'If the shortlist is already credible, move straight into cart or checkout. If you still need technical confirmation, sales can help close the remaining gaps.', 'industrial-welding' ); ?></p>
 				</div>
 				<div class="flex flex-col sm:flex-row gap-3">
-					<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+					<a href="<?php echo esc_url( $cart_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+						<?php esc_html_e( 'Open Cart', 'industrial-welding' ); ?>
 					</a>
 					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
 						<?php esc_html_e( 'Open Finder', 'industrial-welding' ); ?>

@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $navigation_items = industrial_welding_get_navigation_items();
 $finder_url       = industrial_welding_get_finder_page_url();
+$account_url      = industrial_welding_get_account_page_url();
+$cart_url         = industrial_welding_get_cart_page_url();
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
@@ -40,7 +42,7 @@ $finder_url       = industrial_welding_get_finder_page_url();
 						<span class="text-slate-700">/</span>
 						<span><?php esc_html_e( 'Compare Shortlists', 'industrial-welding' ); ?></span>
 						<span class="text-slate-700">/</span>
-						<span><?php esc_html_e( 'Quote Or Checkout', 'industrial-welding' ); ?></span>
+						<span><?php esc_html_e( 'Add To Cart And Checkout', 'industrial-welding' ); ?></span>
 					</div>
 					<a href="<?php echo esc_url( industrial_welding_get_contact_phone_href() ); ?>" class="transition hover:text-amber-200">
 						<?php echo esc_html( industrial_welding_get_contact_phone_label() ); ?>
@@ -90,6 +92,13 @@ $finder_url       = industrial_welding_get_finder_page_url();
 				</nav>
 
 				<div class="hidden lg:flex items-center gap-3">
+					<a href="<?php echo esc_url( $account_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php esc_html_e( 'My Account', 'industrial-welding' ); ?>
+					</a>
+					<a href="<?php echo esc_url( $cart_url ); ?>" class="inline-flex items-center gap-2 justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
+						<span><?php esc_html_e( 'Cart', 'industrial-welding' ); ?></span>
+						<?php echo wp_kses_post( industrial_welding_get_cart_count_badge_markup() ); ?>
+					</a>
 					<a href="<?php echo esc_url( industrial_welding_get_catalog_url() ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
 						<?php echo esc_html( industrial_welding_get_machine_label( true ) ); ?>
 					</a>
@@ -136,6 +145,13 @@ $finder_url       = industrial_welding_get_finder_page_url();
 				<?php endif; ?>
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+					<a href="<?php echo esc_url( $account_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php esc_html_e( 'My Account', 'industrial-welding' ); ?>
+					</a>
+					<a href="<?php echo esc_url( $cart_url ); ?>" class="inline-flex items-center gap-2 justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
+						<span><?php esc_html_e( 'Cart', 'industrial-welding' ); ?></span>
+						<?php echo wp_kses_post( industrial_welding_get_cart_count_badge_markup() ); ?>
+					</a>
 					<a href="<?php echo esc_url( industrial_welding_get_catalog_url() ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-amber-300 hover:text-amber-200 font-rajdhani">
 						<?php echo esc_html( industrial_welding_get_machine_label( true ) ); ?>
 					</a>
@@ -155,3 +171,4 @@ $finder_url       = industrial_welding_get_finder_page_url();
 	</header>
 
 	<main id="primary" class="site-main flex-grow">
+		<?php industrial_welding_maybe_render_global_woocommerce_notices(); ?>

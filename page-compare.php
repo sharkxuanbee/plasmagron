@@ -16,6 +16,7 @@ $compare_min_selection  = industrial_welding_get_compare_min_selection();
 $requested_ids          = industrial_welding_get_requested_compare_ids();
 $catalog_url            = industrial_welding_get_catalog_url();
 $finder_url             = industrial_welding_get_finder_page_url();
+$cart_url               = industrial_welding_get_cart_page_url();
 $contact_url            = industrial_welding_get_contact_page_url();
 $products_data          = array();
 $selected_product_ids   = array();
@@ -41,6 +42,7 @@ if ( ! empty( $requested_ids ) ) {
 			$product = industrial_welding_is_woocommerce_active() ? wc_get_product( get_the_ID() ) : null;
 			$summary = $product ? industrial_welding_get_product_summary( $product, 22 ) : get_the_excerpt();
 			$term    = industrial_welding_get_primary_product_term( get_the_ID() );
+			$action  = industrial_welding_get_product_purchase_action( $product ? $product : get_the_ID() );
 
 			$products_data[] = array(
 				'id'            => get_the_ID(),
@@ -55,6 +57,8 @@ if ( ! empty( $requested_ids ) ) {
 				'weight'        => industrial_welding_get_product_meta( get_the_ID(), 'weight' ),
 				'best_for'      => industrial_welding_get_product_meta( get_the_ID(), 'best_for' ),
 				'summary'       => $summary,
+				'action_url'    => $action['url'],
+				'action_label'  => $action['label'],
 			);
 		}
 
@@ -78,7 +82,7 @@ $has_full_compare_view = $selected_count >= $compare_min_selection;
 					<?php esc_html_e( 'Compare Machines', 'industrial-welding' ); ?>
 				</h1>
 				<p class="mt-5 max-w-3xl text-lg md:text-xl text-slate-300 leading-relaxed">
-					<?php esc_html_e( 'Turn a shortlist into a decision. Review the core differences side by side, then return to detail, quote, or checkout with less uncertainty.', 'industrial-welding' ); ?>
+					<?php esc_html_e( 'Turn a shortlist into a decision. Review the core differences side by side, then return to detail, cart, or checkout with less uncertainty.', 'industrial-welding' ); ?>
 				</p>
 				<div class="mt-8 flex flex-col sm:flex-row gap-3">
 					<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
@@ -173,8 +177,8 @@ $has_full_compare_view = $selected_count >= $compare_min_selection;
 								<a href="<?php echo esc_url( $machine['permalink'] ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
 									<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
 								</a>
-								<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
-									<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+								<a href="<?php echo esc_url( $machine['action_url'] ? $machine['action_url'] : $cart_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+									<?php echo esc_html( $machine['action_label'] ? $machine['action_label'] : __( 'Open Cart', 'industrial-welding' ) ); ?>
 								</a>
 							</div>
 						</div>
@@ -252,7 +256,7 @@ $has_full_compare_view = $selected_count >= $compare_min_selection;
 						<tr>
 							<th><?php esc_html_e( 'Price', 'industrial-welding' ); ?></th>
 							<?php foreach ( $products_data as $machine ) : ?>
-								<td><?php echo $machine['price_html'] ? wp_kses_post( $machine['price_html'] ) : esc_html__( 'Quote on request', 'industrial-welding' ); ?></td>
+								<td><?php echo $machine['price_html'] ? wp_kses_post( $machine['price_html'] ) : esc_html__( 'Price pending', 'industrial-welding' ); ?></td>
 							<?php endforeach; ?>
 						</tr>
 						<tr>
@@ -263,8 +267,8 @@ $has_full_compare_view = $selected_count >= $compare_min_selection;
 										<a href="<?php echo esc_url( $machine['permalink'] ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
 											<?php esc_html_e( 'View Machine', 'industrial-welding' ); ?>
 										</a>
-										<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
-											<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+										<a href="<?php echo esc_url( $machine['action_url'] ? $machine['action_url'] : $cart_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+											<?php echo esc_html( $machine['action_label'] ? $machine['action_label'] : __( 'Open Cart', 'industrial-welding' ) ); ?>
 										</a>
 									</div>
 								</td>
@@ -278,10 +282,10 @@ $has_full_compare_view = $selected_count >= $compare_min_selection;
 				<div class="rounded-[1.8rem] border border-slate-800 bg-slate-900/80 p-7">
 					<p class="text-xs uppercase tracking-[0.24em] text-amber-300 font-semibold mb-3"><?php esc_html_e( 'Decision CTA', 'industrial-welding' ); ?></p>
 					<h2 class="text-3xl font-bold text-white font-rajdhani"><?php esc_html_e( 'Use the shortlist to trigger the real next action', 'industrial-welding' ); ?></h2>
-					<p class="mt-4 text-slate-300 leading-relaxed"><?php esc_html_e( 'Once the tradeoffs are clear, either return to a machine detail page for the final purchase path or send a quote request with the shortlist already narrowed down.', 'industrial-welding' ); ?></p>
+					<p class="mt-4 text-slate-300 leading-relaxed"><?php esc_html_e( 'Once the tradeoffs are clear, either return to a machine detail page or move the best-fit option into cart and checkout.', 'industrial-welding' ); ?></p>
 					<div class="mt-6 flex flex-col sm:flex-row gap-3">
-						<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
-							<?php esc_html_e( 'Quote This Shortlist', 'industrial-welding' ); ?>
+						<a href="<?php echo esc_url( $cart_url ); ?>" class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-slate-950 transition hover:bg-amber-300 font-rajdhani">
+							<?php esc_html_e( 'Open Cart', 'industrial-welding' ); ?>
 						</a>
 						<a href="<?php echo esc_url( $catalog_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
 							<?php esc_html_e( 'Return To Catalog', 'industrial-welding' ); ?>
@@ -370,8 +374,8 @@ $has_full_compare_view = $selected_count >= $compare_min_selection;
 					<a href="<?php echo esc_url( $finder_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
 						<?php esc_html_e( 'Open Finder', 'industrial-welding' ); ?>
 					</a>
-					<a href="<?php echo esc_url( $contact_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
-						<?php echo esc_html( industrial_welding_get_request_quote_label() ); ?>
+					<a href="<?php echo esc_url( $cart_url ); ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:border-cyan-300 hover:text-cyan-200 font-rajdhani">
+						<?php esc_html_e( 'Open Cart', 'industrial-welding' ); ?>
 					</a>
 				</div>
 				<div class="mt-8 inline-flex rounded-full border border-slate-700 bg-slate-900/70 px-4 py-2 text-sm text-slate-400">

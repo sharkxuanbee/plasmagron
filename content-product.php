@@ -83,7 +83,7 @@ $shortlist_selected_label = __( 'Shortlisted', 'industrial-welding' );
 			<div class="mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
 				<p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold"><?php esc_html_e( 'Decision Note', 'industrial-welding' ); ?></p>
 				<p class="mt-2 text-sm text-slate-300 leading-relaxed">
-					<?php echo esc_html( $best_for ? wp_trim_words( wp_strip_all_tags( $best_for ), 16 ) : __( 'Open the detail page for the full conversion path, downloads, trust notes, and quote or purchase action.', 'industrial-welding' ) ); ?>
+					<?php echo esc_html( $best_for ? wp_trim_words( wp_strip_all_tags( $best_for ), 16 ) : __( 'Open the detail page for the full conversion path, downloads, trust notes, and cart or purchase action.', 'industrial-welding' ) ); ?>
 				</p>
 			</div>
 		</div>
